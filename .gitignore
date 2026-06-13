@@ -1,0 +1,19 @@
+.vs/
+.github/
+.vscode/
+Monitor Matrix/cpp.hint
+Monitor Matrix/x64/Debug/
+Monitor Matrix/x64/Release/
+x64/**
+
+# Unignore parent directories leading to the files
+!x64/
+!x64/Debug/
+!x64/Debug/config/
+
+!x64/Release/
+!x64/Release/config/
+
+# Unignore the specific files
+!x64/Debug/config/apps.json
+!x64/Release/config/apps.json

@@ -1,0 +1,56 @@
+[
+  {
+    "id": "vscode",
+    "name": "Visual Studio Code",
+    "type": "Application",
+    "path": "C:\\Users\\awais.saleem\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe"
+  },
+  {
+    "id": "opm",
+    "name": "Output Messenger",
+    "type": "Application",
+    "path": "C:\\Program Files\\Output Messenger\\OutputMessenger.exe"
+  },
+  {
+    "id": "notepad++",
+    "name": "Notepad++",
+    "type": "Application",
+    "path": "C:\\Program Files\\Notepad++\\notepad++.exe"
+  },
+  {
+    "id": "chrome",
+    "name": "Google Chrome",
+    "type": "Application",
+    "path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+  },
+  {
+    "id": "notepad",
+    "name": "Notepad",
+    "type": "Application",
+    "path": "C:\\WINDOWS\\system32\\notepad.exe"
+  },
+  {
+    "id": "azure",
+    "name": "Azure DevOps",
+    "type": "URL",
+    "path": "http://azuredevops/"
+  },
+  {
+    "id": "lan",
+    "name": "LAN Monitoring",
+    "type": "URL",
+    "path": "http://localhost:3000/network-monitoring/lan-connectivity"
+  },
+  {
+    "id": "wan",
+    "name": "WAN Monitoring",
+    "type": "URL",
+    "path": "http://localhost:3000/network-monitoring/simnet-visibility"
+  },
+  {
+    "id": "EMS",
+    "name": "Employee Management System",
+    "type": "URL",
+    "path": "http://200.0.0.75/"
+  }
+]

@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\services\DisplayConfigService.cpp" />
+    <ClCompile Include="src\scene\MonitorTopologyItem.cpp" />
+    <ClCompile Include="src\scene\MonitorTopologyScene.cpp">
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Filename).moc</QtMocFileName>
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Release|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Filename).moc</QtMocFileName>
+    </ClCompile>
+    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="src\dialog\ScreenConfigDialog.cpp" />
+    <ClCompile Include="src\managers\ConfigManager.cpp" />
+    <ClCompile Include="src\managers\LayoutManager.cpp" />
+    <ClCompile Include="src\scene\MonitorDropItem.cpp" />
+    <ClCompile Include="src\scene\MonitorScene.cpp" />
+    <ClCompile Include="src\scene\PlacedItem.cpp">
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Filename).moc</QtMocFileName>
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Release|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Filename).moc</QtMocFileName>
+    </ClCompile>
+    <ClCompile Include="src\scene\PlacedItemHandles.cpp" />
+    <ClCompile Include="src\scene\PlacedItemResize.cpp" />
+    <ClCompile Include="src\scene\PlacedItemSnap.cpp" />
+    <ClCompile Include="src\services\LaunchService.cpp" />
+    <ClCompile Include="src\services\MonitorService.cpp" />
+    <ClCompile Include="src\strategies\ExecutableStrategy.cpp" />
+    <ClCompile Include="src\strategies\LaunchStrategy.cpp" />
+    <ClCompile Include="src\strategies\URLStrategy.cpp" />
+    <ClCompile Include="src\views\AppListView.cpp" />
+    <ClCompile Include="src\views\MainWindow.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="src\dialog\ScreenConfigDialog.h" />
+    <QtMoc Include="src\services\DisplayConfigService.h" />
+    <ClInclude Include="src\scene\MonitorTopologyItem.h" />
+    <QtMoc Include="src\scene\MonitorTopologyScene.h" />
+    <ClInclude Include="src\models\DisplayConfigTypes.h" />
+    <ClInclude Include="src\enums\AppPositionEnum.h" />
+    <ClInclude Include="src\managers\ConfigManager.h" />
+    <ClInclude Include="src\managers\LayoutManager.h" />
+    <ClInclude Include="src\models\AppItem.h" />
+    <ClInclude Include="src\models\MonitorInfo.h" />
+    <ClInclude Include="src\models\Placement.h" />
+    <QtMoc Include="src\scene\MonitorDropItem.h" />
+    <QtMoc Include="src\scene\PlacedItem.h" />
+    <ClInclude Include="src\scene\PlacedItemHandles.h" />
+    <ClInclude Include="src\scene\PlacedItemResize.h" />
+    <ClInclude Include="src\scene\PlacedItemSnap.h" />
+    <ClInclude Include="src\services\LaunchService.h" />
+    <ClInclude Include="src\strategies\ExecutableStrategy.h" />
+    <ClInclude Include="src\strategies\LaunchStrategy.h" />
+    <ClInclude Include="src\strategies\URLStrategy.h" />
+    <QtMoc Include="src\views\MainWindow.h" />
+    <QtMoc Include="src\views\AppListView.h" />
+    <QtMoc Include="src\scene\MonitorScene.h" />
+    <QtMoc Include="src\services\MonitorService.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\x64\Debug\config\apps.json" />
+    <None Include="..\x64\Release\config\apps.json" />
+    <None Include="cpp.hint" />
+    <None Include="README.md" />
+    <None Include="styles\app.qss" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="Resource.qrc" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{B12702AD-ABFB-343A-A199-8E24837244A3}</ProjectGuid>
+    <Keyword>QtVS_v302</Keyword>
+    <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v145</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v145</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
+    <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />
+  </Target>
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt_defaults.props')">
+    <Import Project="$(QtMsBuild)\qt_defaults.props" />
+  </ImportGroup>
+  <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <QtInstall>6.11.0_msvc2022_64</QtInstall>
+    <QtModules>concurrent;core;gui;widgets</QtModules>
+  </PropertyGroup>
+  <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <QtInstall>6.11.0_msvc2022_64</QtInstall>
+    <QtModules>concurrent;core;gui;widgets</QtModules>
+  </PropertyGroup>
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt.props')">
+    <Import Project="$(QtMsBuild)\qt.props" />
+  </ImportGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat />
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
+    <Import Project="$(QtMsBuild)\qt.targets" />
+  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
