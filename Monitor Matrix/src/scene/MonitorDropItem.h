@@ -4,7 +4,7 @@
 #include <qmap.h>
 #include <qrect.h>
 #include "PlacedItem.h"
-#include "../enums/AppPositionEnum.h"
+#include "../enums/AppPosition.h"
 #include "../strategies/LaunchStrategy.h"
 #include "../models/MonitorInfo.h"
 

@@ -58,9 +58,33 @@
     <Filter Include="Source Files\dialog">
       <UniqueIdentifier>{2c04e934-da56-4f7c-9618-b6bc4d38d2ea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\theme">
+      <UniqueIdentifier>{a870af0a-3e07-444d-b01e-79d6fbda9f89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\theme">
+      <UniqueIdentifier>{d536ee22-09b7-4212-94aa-31550e0ecf38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\utils">
+      <UniqueIdentifier>{29e1b1e2-66b0-4a97-a4a4-0cdd96bb4515}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\utils">
+      <UniqueIdentifier>{69a5cf75-4f3e-4f9b-9b5c-55fa23d80740}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\platform">
+      <UniqueIdentifier>{efb4f28c-7e0f-4910-8717-1953fdb8c6c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\platform\windows">
+      <UniqueIdentifier>{52dc7afc-69a4-4556-a792-2ef4b85a9c31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\platform">
+      <UniqueIdentifier>{c0b25e44-d22f-4d77-8fd1-c1e146273783}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\platform\windows">
+      <UniqueIdentifier>{3b1f68f6-0a50-4436-97fc-c71464b48cc1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\managers\ConfigManager.cpp">
@@ -78,6 +102,9 @@
     <ClCompile Include="src\views\MainWindow.cpp">
       <Filter>Source Files\views</Filter>
     </ClCompile>
+    <ClCompile Include="src\views\MainWindowAppManagement.cpp">
+      <Filter>Source Files\views</Filter>
+    </ClCompile>
     <ClCompile Include="src\strategies\ExecutableStrategy.cpp">
       <Filter>Source Files\strategy</Filter>
     </ClCompile>
@@ -87,7 +114,19 @@
     <ClCompile Include="src\services\MonitorService.cpp">
       <Filter>Source Files\services</Filter>
     </ClCompile>
+    <ClCompile Include="src\services\AppCatalogService.cpp">
+      <Filter>Source Files\services</Filter>
+    </ClCompile>
     <ClCompile Include="src\services\LaunchService.cpp">
+      <Filter>Source Files\services</Filter>
+    </ClCompile>
+    <ClCompile Include="src\services\LaunchProcess.cpp">
+      <Filter>Source Files\services</Filter>
+    </ClCompile>
+    <ClCompile Include="src\services\LaunchWindowPlacement.cpp">
+      <Filter>Source Files\services</Filter>
+    </ClCompile>
+    <ClCompile Include="src\services\LayoutLaunchService.cpp">
       <Filter>Source Files\services</Filter>
     </ClCompile>
     <ClCompile Include="src\strategies\LaunchStrategy.cpp">
@@ -111,6 +150,12 @@
     <ClCompile Include="src\dialog\ScreenConfigDialog.cpp">
       <Filter>Source Files\dialog</Filter>
     </ClCompile>
+    <ClCompile Include="src\dialog\AppEditDialog.cpp">
+      <Filter>Source Files\dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="src\dialog\AuthDialog.cpp">
+      <Filter>Source Files\dialog</Filter>
+    </ClCompile>
     <ClCompile Include="src\scene\MonitorTopologyItem.cpp">
       <Filter>Source Files\scene</Filter>
     </ClCompile>
@@ -120,12 +165,42 @@
     <ClCompile Include="src\scene\MonitorTopologyScene.cpp">
       <Filter>Source Files\scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\theme\AppTheme.cpp">
+      <Filter>Source Files\theme</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\AppLogger.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\windows\WindowsDisplayTopology.cpp">
+      <Filter>Source Files\platform\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\windows\WindowsDisplayModes.cpp">
+      <Filter>Source Files\platform\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\windows\WindowsShortcutResolver.cpp">
+      <Filter>Source Files\platform\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\windows\WindowsTaskRunner.cpp">
+      <Filter>Source Files\platform\windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\services\LaunchService.h">
       <Filter>Header Files\services</Filter>
     </ClInclude>
-    <ClInclude Include="src\enums\AppPositionEnum.h">
+    <ClInclude Include="src\services\AppCatalogService.h">
+      <Filter>Header Files\services</Filter>
+    </ClInclude>
+    <ClInclude Include="src\services\LaunchProcess.h">
+      <Filter>Header Files\services</Filter>
+    </ClInclude>
+    <ClInclude Include="src\services\LaunchWindowPlacement.h">
+      <Filter>Header Files\services</Filter>
+    </ClInclude>
+    <ClInclude Include="src\services\LayoutLaunchService.h">
+      <Filter>Header Files\services</Filter>
+    </ClInclude>
+    <ClInclude Include="src\enums\AppPosition.h">
       <Filter>Header Files\enums</Filter>
     </ClInclude>
     <ClInclude Include="src\models\AppItem.h">
@@ -161,11 +236,29 @@
     <ClInclude Include="src\scene\PlacedItemSnap.h">
       <Filter>Header Files\scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\models\DisplayConfigTypes.h">
+    <ClInclude Include="src\models\DisplayConfig.h">
       <Filter>Header Files\models</Filter>
     </ClInclude>
     <ClInclude Include="src\scene\MonitorTopologyItem.h">
       <Filter>Header Files\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\theme\AppTheme.h">
+      <Filter>Header Files\theme</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\AppLogger.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\windows\WindowsDisplayTopology.h">
+      <Filter>Header Files\platform\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\windows\WindowsDisplayModes.h">
+      <Filter>Header Files\platform\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\windows\WindowsShortcutResolver.h">
+      <Filter>Header Files\platform\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\windows\WindowsTaskRunner.h">
+      <Filter>Header Files\platform\windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -190,6 +283,12 @@
     <QtMoc Include="src\dialog\ScreenConfigDialog.h">
       <Filter>Header Files\dialog</Filter>
     </QtMoc>
+    <QtMoc Include="src\dialog\AppEditDialog.h">
+      <Filter>Header Files\dialog</Filter>
+    </QtMoc>
+    <QtMoc Include="src\dialog\AuthDialog.h">
+      <Filter>Header Files\dialog</Filter>
+    </QtMoc>
     <QtMoc Include="src\scene\MonitorTopologyScene.h">
       <Filter>Header Files\scene</Filter>
     </QtMoc>
@@ -201,14 +300,12 @@
     <None Include="..\x64\Debug\config\apps.json">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="cpp.hint" />
     <None Include="..\x64\Release\config\apps.json">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="styles\app.qss">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="Resource.qrc">

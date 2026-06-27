@@ -17,6 +17,7 @@ private:
 
 	// key = placementId, not appId
 	QMap<QString, Placement> m_placements;
+	QMap<QString, QString> m_appNamesByPlacementId;
 
 	MonitorDropItem* findMonitor(const QString& deviceName) const;
 
@@ -49,7 +50,9 @@ public:
 	void setMonitors(QList<MonitorInfo> monitors);
 	QList<Placement> placements();
 	void clearPlacements();
+	int removePlacementsForApp(const QString& appId);
 	void addPlacement(const Placement& placement, const QString& appName = QString());
+	void refreshTheme();
 
 	QRectF rectForPosition(const QRectF& monitorRect, AppPosition position) const;
 	QRectF rectForPlacement(const Placement& placement) const;

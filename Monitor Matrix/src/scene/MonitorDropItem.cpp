@@ -7,6 +7,7 @@
 #include <qglobal.h>
 
 #include "MonitorDropItem.h"
+#include "../theme/AppTheme.h"
 
 MonitorDropItem::MonitorDropItem(MonitorInfo info, QGraphicsItem* parent)
 	: QGraphicsRectItem(info.geometry, parent)
@@ -14,17 +15,17 @@ MonitorDropItem::MonitorDropItem(MonitorInfo info, QGraphicsItem* parent)
 	m_info = info;
 
 	setAcceptDrops(true);
-	setPen(QPen(QColor(124, 92, 252, 230), 2.0));
-	setBrush(QColor(22, 20, 40, 210));
+	setPen(QPen(AppTheme::palette().monitorBorder, 2.0));
+	setBrush(AppTheme::palette().monitorFill);
 
 	m_badgeBg = new QGraphicsRectItem(this);
-	m_badgeBg->setBrush(QColor(124, 92, 252, 30));
+	m_badgeBg->setBrush(AppTheme::palette().badgeFill);
 	m_badgeBg->setPen(Qt::NoPen);
 	m_badgeBg->setZValue(1000);
 	m_badgeBg->setVisible(false);
 
 	m_badgeText = new QGraphicsTextItem(this);
-	m_badgeText->setDefaultTextColor(QColor(124, 92, 252, 160));
+	m_badgeText->setDefaultTextColor(AppTheme::palette().badgeText);
 
 	QFont f = m_badgeText->font();
 	f.setBold(true);
@@ -219,7 +220,8 @@ void MonitorDropItem::updateBadge()
 	qreal ty = r.bottom() - textRect.height() - 8;
 
 	m_badgeText->setPos(tx, ty);
-	m_badgeText->setDefaultTextColor(QColor(124, 92, 252, 160));
+	m_badgeBg->setBrush(AppTheme::palette().badgeFill);
+	m_badgeText->setDefaultTextColor(AppTheme::palette().badgeText);
 	m_badgeText->setZValue(2000);
 }
 
@@ -291,12 +293,23 @@ void MonitorDropItem::dropEvent(QGraphicsSceneDragDropEvent* event)
 
 void MonitorDropItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
+	setPen(QPen(AppTheme::palette().monitorBorder, 2.0));
+	setBrush(AppTheme::palette().monitorFill);
+
+	if (m_badgeBg) {
+		m_badgeBg->setBrush(AppTheme::palette().badgeFill);
+	}
+
+	if (m_badgeText) {
+		m_badgeText->setDefaultTextColor(AppTheme::palette().badgeText);
+	}
+
 	QGraphicsRectItem::paint(painter, option, widget);
 
 	if (!m_zoneHighlight.isNull() && m_dragging) {
 		painter->save();
 		painter->setPen(Qt::NoPen);
-		painter->setBrush(QColor(32, 210, 180, 70));
+		painter->setBrush(AppTheme::palette().dropHighlight);
 		painter->drawRect(m_zoneHighlight);
 		painter->restore();
 	}
@@ -311,12 +324,12 @@ void MonitorDropItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* o
 			bool hovered = m_hasDockHover && it.key() == m_hoverDockPosition;
 
 			QColor border = hovered
-				? QColor(32, 210, 180, 255)
-				: QColor(124, 92, 252, 220);
+				? AppTheme::palette().dockHoverBorder
+				: AppTheme::palette().dockBorder;
 
 			QColor fill = hovered
-				? QColor(32, 210, 180, 90)
-				: QColor(22, 20, 40, 235);
+				? AppTheme::palette().dockHoverFill
+				: AppTheme::palette().dockFill;
 
 			painter->setPen(QPen(border, hovered ? 2.5 : 1.5));
 			painter->setBrush(fill);
@@ -325,7 +338,7 @@ void MonitorDropItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* o
 			QRectF iconRect = it.value().adjusted(8, 8, -8, -8);
 			QRectF screenRect = iconRect;
 
-			painter->setPen(QPen(QColor(226, 226, 240, 220), 1.2));
+			painter->setPen(QPen(AppTheme::palette().dockScreenOutline, 1.2));
 			painter->setBrush(Qt::NoBrush);
 			painter->drawRect(screenRect);
 
@@ -345,7 +358,9 @@ void MonitorDropItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* o
 			);
 
 			painter->setPen(Qt::NoPen);
-			painter->setBrush(QColor(32, 210, 180, hovered ? 220 : 150));
+			painter->setBrush(hovered
+				? AppTheme::palette().dockPreviewHoverFill
+				: AppTheme::palette().dockPreviewFill);
 			painter->drawRect(miniFill);
 		}
 

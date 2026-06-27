@@ -6,6 +6,7 @@
 #include <quuid.h>
 #include <qkeysequence.h>
 #include <qevent.h>
+#include "../theme/AppTheme.h"
 
 MonitorDropItem* MonitorScene::findMonitor(const QString &deviceName) const
 {
@@ -151,6 +152,7 @@ void MonitorScene::onPlacementRequested(QString appId, QString appName, QString 
 	}
 
 	m_placements.insert(placement.placementId, placement);
+	m_appNamesByPlacementId.insert(placement.placementId, appName);
 
 	if (monitor) {
 		monitor->addPlacementVisual(position, placement.placementId, appId, appName);
@@ -183,6 +185,7 @@ void MonitorScene::onPlacementMoveRequested(QString placementId, QString appId, 
 	placement.placementId = placementId;
 
 	m_placements.insert(placement.placementId, placement);
+	m_appNamesByPlacementId.insert(placement.placementId, appName);
 
 	if (monitor) {
 		monitor->addPlacementVisual(position, placement.placementId, appId, appName);
@@ -215,6 +218,7 @@ void MonitorScene::onPlacementCustomRectRequested(QString placementId, QString a
 	placement.placementId = placementId;
 
 	m_placements.insert(placement.placementId, placement);
+	m_appNamesByPlacementId.insert(placement.placementId, appName);
 
 	if (monitor) {
 		monitor->addPlacementVisual(zoneRect, placement.placementId, appId, appName);
@@ -231,6 +235,7 @@ void MonitorScene::onPlacementRemoveRequested(QString placementId)
 	}
 
 	Placement old = m_placements.take(placementId);
+	m_appNamesByPlacementId.remove(placementId);
 	removePlacementVisual(old);
 
 	updateOverlapStates();
@@ -239,7 +244,7 @@ void MonitorScene::onPlacementRemoveRequested(QString placementId)
 
 void MonitorScene::drawBackground(QPainter* painter, const QRectF& rect)
 {
-	painter->fillRect(rect, QColor(9, 9, 16));
+	painter->fillRect(rect, AppTheme::palette().sceneBackground);
 }
 
 MonitorScene::MonitorScene(QObject* parent) : QGraphicsScene(parent)
@@ -271,9 +276,34 @@ void MonitorScene::clearPlacements()
 	}
 
 	m_placements.clear();
+	m_appNamesByPlacementId.clear();
 
 	updateOverlapStates();
 	emit placementChanged();
+}
+
+int MonitorScene::removePlacementsForApp(const QString& appId)
+{
+	QList<QString> placementIds;
+
+	for (auto it = m_placements.constBegin(); it != m_placements.constEnd(); ++it) {
+		if (it.value().appId == appId) {
+			placementIds.append(it.key());
+		}
+	}
+
+	for (const QString& placementId : placementIds) {
+		Placement old = m_placements.take(placementId);
+		m_appNamesByPlacementId.remove(placementId);
+		removePlacementVisual(old);
+	}
+
+	if (!placementIds.isEmpty()) {
+		updateOverlapStates();
+		emit placementChanged();
+	}
+
+	return placementIds.size();
 }
 
 void MonitorScene::addPlacement(const Placement& placement, const QString& appName)
@@ -285,6 +315,10 @@ void MonitorScene::addPlacement(const Placement& placement, const QString& appNa
 	}
 
 	m_placements.insert(fixedPlacement.placementId, fixedPlacement);
+	m_appNamesByPlacementId.insert(
+		fixedPlacement.placementId,
+		appName.isEmpty() ? fixedPlacement.appId : appName
+	);
 
 	auto* monitor = findMonitor(fixedPlacement.monitor.deviceName);
 
@@ -309,6 +343,16 @@ void MonitorScene::addPlacement(const Placement& placement, const QString& appNa
 
 	updateOverlapStates();
 	emit placementChanged();
+}
+
+void MonitorScene::refreshTheme()
+{
+	for (QGraphicsItem* item : items()) {
+		item->update();
+	}
+
+	invalidate(sceneRect(), QGraphicsScene::AllLayers);
+	update(sceneRect());
 }
 
 void MonitorScene::rebuildItems()
@@ -342,6 +386,39 @@ void MonitorScene::rebuildItems()
 		MonitorDropItem* monitorItem = dynamic_cast<MonitorDropItem*>(item);
 		if (monitorItem) {
 			monitorItem->updateBadge();
+		}
+	}
+
+	for (auto it = m_placements.begin(); it != m_placements.end(); ++it) {
+		Placement& placement = it.value();
+		auto* monitorItem = findMonitor(placement.monitor.deviceName);
+
+		if (!monitorItem) {
+			continue;
+		}
+
+		placement.monitor = monitorItem->getMonitorInfo();
+
+		const QString appName = m_appNamesByPlacementId.value(
+			placement.placementId,
+			placement.appId
+		);
+
+		if (placement.customRect) {
+			monitorItem->addPlacementVisual(
+				QRectF(placement.zoneRect),
+				placement.placementId,
+				placement.appId,
+				appName
+			);
+		}
+		else {
+			monitorItem->addPlacementVisual(
+				placement.position,
+				placement.placementId,
+				placement.appId,
+				appName
+			);
 		}
 	}
 

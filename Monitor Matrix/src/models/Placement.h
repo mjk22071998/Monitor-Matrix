@@ -1,7 +1,7 @@
 #pragma once
 #include <qstring.h>
 #include "../services/MonitorService.h"
-#include "../enums/AppPositionEnum.h"
+#include "../enums/AppPosition.h"
 #include <quuid.h>
 
 struct Placement {

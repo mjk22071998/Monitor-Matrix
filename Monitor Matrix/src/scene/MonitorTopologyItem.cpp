@@ -5,6 +5,7 @@
 #include <QPainter>
 #include <QPen>
 #include <QStyleOptionGraphicsItem>
+#include "../theme/AppTheme.h"
 
 MonitorTopologyItem::MonitorTopologyItem(int displayIndex,
     const QString& title,
@@ -64,12 +65,12 @@ void MonitorTopologyItem::paint(QPainter* painter,
     const bool selected = isSelected();
 
     QColor border = hovered || selected
-        ? QColor(32, 210, 180, 255)
-        : QColor(124, 92, 252, 220);
+        ? AppTheme::palette().dockHoverBorder
+        : AppTheme::palette().monitorBorder;
 
     QColor fill = hovered || selected
-        ? QColor(32, 210, 180, 90)
-        : QColor(22, 20, 40, 235);
+        ? AppTheme::palette().dockHoverFill
+        : AppTheme::palette().dockFill;
 
     painter->setRenderHint(QPainter::Antialiasing, true);
 
@@ -78,7 +79,7 @@ void MonitorTopologyItem::paint(QPainter* painter,
     painter->drawRect(r);
 
     if (m_primary) {
-        QPen primaryPen(QColor(80, 170, 255, 245), 3.0);
+        QPen primaryPen(AppTheme::palette().primaryDisplayBorder, 3.0);
         primaryPen.setStyle(Qt::DashLine);
 
         painter->setPen(primaryPen);
@@ -91,7 +92,7 @@ void MonitorTopologyItem::paint(QPainter* painter,
     f.setPointSize(16);
     painter->setFont(f);
 
-    painter->setPen(QColor(226, 226, 240, 235));
+    painter->setPen(AppTheme::palette().placementText);
     painter->drawText(r, Qt::AlignCenter, m_title);
 
     if (m_primary) {
@@ -103,10 +104,10 @@ void MonitorTopologyItem::paint(QPainter* painter,
         QRectF badgeRect(r.left() + 10, r.top() + 10, 76, 24);
 
         painter->setPen(Qt::NoPen);
-        painter->setBrush(QColor(80, 170, 255, 45));
+        painter->setBrush(AppTheme::palette().primaryDisplayFill);
         painter->drawRect(badgeRect);
 
-        painter->setPen(QColor(120, 200, 255, 240));
+        painter->setPen(AppTheme::palette().primaryDisplayText);
         painter->drawText(badgeRect, Qt::AlignCenter, "PRIMARY");
     }
 }

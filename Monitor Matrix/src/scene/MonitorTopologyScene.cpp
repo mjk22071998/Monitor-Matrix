@@ -4,6 +4,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QQueue>
 #include <QtMath>
+#include "../theme/AppTheme.h"
 
 MonitorTopologyScene::MonitorTopologyScene(QObject* parent)
     : QGraphicsScene(parent)
@@ -685,17 +686,18 @@ void MonitorTopologyScene::updateAlignmentGuides(bool showVertical,
 
     if (!m_verticalGuide) {
         m_verticalGuide = new QGraphicsLineItem();
-        m_verticalGuide->setPen(QPen(QColor(32, 210, 180, 220), 1.5, Qt::DashLine));
         m_verticalGuide->setZValue(99999);
         addItem(m_verticalGuide);
     }
 
     if (!m_horizontalGuide) {
         m_horizontalGuide = new QGraphicsLineItem();
-        m_horizontalGuide->setPen(QPen(QColor(32, 210, 180, 220), 1.5, Qt::DashLine));
         m_horizontalGuide->setZValue(99999);
         addItem(m_horizontalGuide);
     }
+
+    m_verticalGuide->setPen(QPen(AppTheme::palette().dockPreviewHoverFill, 1.5, Qt::DashLine));
+    m_horizontalGuide->setPen(QPen(AppTheme::palette().dockPreviewHoverFill, 1.5, Qt::DashLine));
 
     m_verticalGuide->setLine(
         verticalX,

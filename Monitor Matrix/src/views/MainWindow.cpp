@@ -1,22 +1,28 @@
 #include "MainWindow.h"
 #include <qapplication.h>
-#include <qlist.h>
 #include <qgraphicsview.h>
 #include <qpainter.h>
 #include <qsplitter.h>
 #include <qlayout.h>
-#include <qset.h>
-#include <QtConcurrent>
+#include <qdebug.h>
+#include <qdir.h>
 #include <qmenu.h>
 #include <qmenubar.h>
 #include <qaction.h>
+#include <qicon.h>
 #include <qkeysequence.h>
 #include <qmessagebox.h>
 #include <qfiledialog.h>
+#include <qsize.h>
 #include <qstatusbar.h>
-#include "../strategies/LaunchStrategy.h"
+#include <qactiongroup.h>
+#include <qdesktopservices.h>
+#include <qfileinfo.h>
+#include <qurl.h>
 #include "../managers/LayoutManager.h"
-#include "../models/AppItem.h"
+#include "../dialog/AuthDialog.h"
+#include "../dialog/ScreenConfigDialog.h"
+#include "../utils/AppLogger.h"
 
 MainWindow::MainWindow(QWidget* parent)
 {
@@ -25,27 +31,43 @@ MainWindow::MainWindow(QWidget* parent)
 	createMenus();
 	updateTitle();
 
-	p_overlapWarningLabel = new QLabel(this);
-	p_overlapWarningLabel->setText("⚠ Layout has overlapping apps");
-	p_overlapWarningLabel->setStyleSheet(
-		"QLabel { color: #ff5050; font-weight: bold; padding: 4px 8px; }"
-	);
-	p_overlapWarningLabel->setVisible(false);
+	p_overlapStatusWidget = new QWidget(this);
+	auto* overlapStatusLayout = new QHBoxLayout(p_overlapStatusWidget);
+	overlapStatusLayout->setContentsMargins(0, 0, 0, 0);
+	overlapStatusLayout->setSpacing(6);
 
-	statusBar()->addPermanentWidget(p_overlapWarningLabel);
+	p_overlapStatusIconLabel = new QLabel(p_overlapStatusWidget);
+	p_overlapStatusIconLabel->setFixedSize(16, 16);
+
+	p_overlapWarningLabel = new QLabel(p_overlapStatusWidget);
+	p_overlapWarningLabel->setText("Layout has overlapping apps");
+	p_overlapWarningLabel->setStyleSheet(
+		AppTheme::statusLabelStyle(true)
+	);
+
+	overlapStatusLayout->addWidget(p_overlapStatusIconLabel);
+	overlapStatusLayout->addWidget(p_overlapWarningLabel);
+	p_overlapStatusWidget->setVisible(false);
+
+	statusBar()->addPermanentWidget(p_overlapStatusWidget);
 
 	QWidget* leftPanel = new QWidget();
 	leftPanel->setObjectName("leftPanel");
 	QVBoxLayout* leftLayout = new QVBoxLayout(leftPanel);
+	leftLayout->setContentsMargins(0, 0, 0, 0);
+	leftLayout->setSpacing(0);
 
 	
 	p_appListView = new AppListView();
-	m_apps = ConfigManager::getApplications(QApplication::applicationDirPath() + "/config/apps.json");
+	m_appCatalog.setConfigFile(QApplication::applicationDirPath() + "/config/apps.json");
+	m_apps = m_appCatalog.loadApplications();
 	p_appListView->setApps(m_apps);
 	leftLayout->addWidget(p_appListView);
 
-	p_runButton = new QPushButton("RUN");
+	p_runButton = new QPushButton("Run Layout");
 	p_runButton->setObjectName("runButton");
+	p_runButton->setIcon(QIcon(QStringLiteral(":/icons/action-run.svg")));
+	p_runButton->setIconSize(QSize(16, 16));
 	p_runButton->setEnabled(true);
 	p_runButton->setFocusPolicy(Qt::FocusPolicy::StrongFocus);
 	leftLayout->addWidget(p_runButton);
@@ -57,36 +79,26 @@ MainWindow::MainWindow(QWidget* parent)
 	
 	connect(p_monitorScene, &MonitorScene::placementChanged, this, [this]() {
 		m_placements = p_monitorScene->placements();
+		updatePlacedApps();
 		});
 	connect(p_monitorService, &MonitorService::monitorsChanged, this, [this]() {p_monitorScene->setMonitors(p_monitorService->getCurrentMonitors()); });
 	connect(p_runButton, &QPushButton::clicked, this, &MainWindow::onRunClicked);
+	connect(p_appListView, &AppListView::addRequested,
+		this, &MainWindow::openAddAppDialog);
+	connect(p_appListView, &AppListView::removeRequested,
+		this, &MainWindow::removeApp);
+	connect(p_appListView, &AppListView::applicationFilesDropped,
+		this, &MainWindow::addDroppedApplicationFiles);
 	connect(p_monitorScene, &MonitorScene::overlapStateChanged,
 		this, [this](bool hasOverlaps, int invalidPlacementCount) {
-			if (hasOverlaps) {
-				p_overlapWarningLabel->setText(
-					QString("⚠ %1 invalid placement%2")
-					.arg(invalidPlacementCount)
-					.arg(invalidPlacementCount == 1 ? "" : "s")
-				);
-
-				p_overlapWarningLabel->setStyleSheet(
-					"QLabel { color: #ff5050; font-weight: bold; padding: 4px 8px; }"
-				);
-			}
-			else {
-				p_overlapWarningLabel->setText("✔ Layout valid");
-
-				p_overlapWarningLabel->setStyleSheet(
-					"QLabel { color: #32d2b4; font-weight: bold; padding: 4px 8px; }"
-				);
-			}
-
-			p_overlapWarningLabel->setVisible(true);
+			updateOverlapStatus(hasOverlaps, invalidPlacementCount);
 		});
 
 
 	QGraphicsView* graphicsView = new QGraphicsView(p_monitorScene);
 	graphicsView->setRenderHints(QPainter::RenderHint::Antialiasing | QPainter::RenderHint::TextAntialiasing);
+	graphicsView->setCacheMode(QGraphicsView::CacheNone);
+	graphicsView->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 	graphicsView->setDragMode(QGraphicsView::DragMode::ScrollHandDrag);
 	graphicsView->fitInView(p_monitorScene->sceneRect(), Qt::AspectRatioMode::KeepAspectRatio);
 
@@ -98,6 +110,7 @@ MainWindow::MainWindow(QWidget* parent)
 
 	setCentralWidget(splitter);
 	resize(1366, 768);
+	updatePlacedApps();
 	
 }
 
@@ -107,6 +120,33 @@ void MainWindow::createMenus()
 	menu->addAction("&Open...", this, &MainWindow::openLayout, QKeySequence::Open);
 	menu->addAction("&Save", this, &MainWindow::save, QKeySequence::Save);
 	menu->addAction("Save &As", this, &MainWindow::saveAs, QKeySequence::fromString("Ctrl+Shift+S"));
+
+	QMenu* settingsMenu = menuBar()->addMenu("&Settings");
+	settingsMenu->addAction("&Screen Configuration...", this, &MainWindow::openScreenSettings);
+	settingsMenu->addAction("Open &Logs Folder", this, &MainWindow::openLogsFolder);
+	settingsMenu->addSeparator();
+
+	QMenu* themeMenu = settingsMenu->addMenu("&Theme");
+	auto* themeGroup = new QActionGroup(this);
+	themeGroup->setExclusive(true);
+
+	p_darkThemeAction = themeMenu->addAction("&Dark");
+	p_darkThemeAction->setCheckable(true);
+	themeGroup->addAction(p_darkThemeAction);
+
+	p_lightThemeAction = themeMenu->addAction("&Light");
+	p_lightThemeAction->setCheckable(true);
+	themeGroup->addAction(p_lightThemeAction);
+
+	connect(p_darkThemeAction, &QAction::triggered, this, [this]() {
+		setTheme(AppThemeMode::Dark);
+	});
+
+	connect(p_lightThemeAction, &QAction::triggered, this, [this]() {
+		setTheme(AppThemeMode::Light);
+	});
+
+	updateThemeActions();
 }
 
 void MainWindow::updateTitle()
@@ -121,26 +161,7 @@ void MainWindow::updateTitle()
 }
 
 void MainWindow::onRunClicked() {
-	for (const Placement& placement : m_placements) {
-		auto it = std::find_if(m_apps.begin(), m_apps.end(), [&](const AppItem & a) {return a.id == placement.appId; });
-
-		if (it != m_apps.end() && it->launchStrategy) {
-			auto launchStrategy = it->launchStrategy;
-			MonitorInfo monitor = placement.monitor;
-			AppPosition position = placement.position;
-			if (placement.customRect) {
-				QRect z = placement.zoneRect;
-				QtConcurrent::run([launchStrategy, monitor, position, z]() {
-					launchStrategy->launch((MonitorInfo&)monitor, position, z);
-				});
-			}
-			else {
-				QtConcurrent::run([launchStrategy, monitor, position]() {
-					launchStrategy->launch((MonitorInfo&)monitor, position);
-				});
-			}
-		}
-	}
+	m_layoutLauncher.launchPlacements(m_apps, m_placements);
 }
 
 void MainWindow::save()
@@ -257,5 +278,85 @@ void MainWindow::openLayout()
 		}
 		notPlacedAppNames=notPlacedAppNames.trimmed();
 		QMessageBox::warning(this, "Apps not placed", "These apps not found in current app list, hence not placed " + notPlacedAppNames);
+	}
+}
+
+void MainWindow::openScreenSettings()
+{
+	if (!AuthDialog::authenticate(this, QStringLiteral("screen configuration"))) {
+		return;
+	}
+
+	ScreenConfigDialog screenDialog(this);
+
+	connect(&screenDialog, &ScreenConfigDialog::displaySettingsSaved, this, [this]() {
+		p_monitorService->refreshMonitors();
+	});
+
+	screenDialog.exec();
+}
+
+void MainWindow::openLogsFolder()
+{
+	QDesktopServices::openUrl(
+		QUrl::fromLocalFile(AppLogger::logDirectory())
+	);
+}
+
+void MainWindow::setTheme(AppThemeMode mode)
+{
+	AppTheme::apply(*qApp, mode);
+	updateThemeActions();
+
+	if (p_monitorScene) {
+		p_monitorScene->refreshTheme();
+	}
+
+	if (p_overlapWarningLabel && p_overlapWarningLabel->isVisible()) {
+		const bool hasOverlaps = p_overlapWarningLabel->text().contains("invalid");
+		p_overlapWarningLabel->setStyleSheet(AppTheme::statusLabelStyle(hasOverlaps));
+	}
+}
+
+void MainWindow::updateOverlapStatus(bool hasOverlaps, int invalidPlacementCount)
+{
+	if (!p_overlapStatusWidget || !p_overlapStatusIconLabel || !p_overlapWarningLabel) {
+		return;
+	}
+
+	const QString iconPath = hasOverlaps
+		? QStringLiteral(":/icons/status-warning.svg")
+		: QStringLiteral(":/icons/status-check.svg");
+
+	p_overlapStatusIconLabel->setPixmap(QIcon(iconPath).pixmap(16, 16));
+	p_overlapStatusIconLabel->setToolTip(
+		hasOverlaps
+		? QStringLiteral("Layout has overlapping apps")
+		: QStringLiteral("Layout is valid")
+	);
+
+	if (hasOverlaps) {
+		p_overlapWarningLabel->setText(
+			QString("%1 invalid placement%2")
+			.arg(invalidPlacementCount)
+			.arg(invalidPlacementCount == 1 ? "" : "s")
+		);
+	}
+	else {
+		p_overlapWarningLabel->setText(QStringLiteral("Layout valid"));
+	}
+
+	p_overlapWarningLabel->setStyleSheet(AppTheme::statusLabelStyle(hasOverlaps));
+	p_overlapStatusWidget->setVisible(true);
+}
+
+void MainWindow::updateThemeActions()
+{
+	if (p_darkThemeAction) {
+		p_darkThemeAction->setChecked(AppTheme::mode() == AppThemeMode::Dark);
+	}
+
+	if (p_lightThemeAction) {
+		p_lightThemeAction->setChecked(AppTheme::mode() == AppThemeMode::Light);
 	}
 }

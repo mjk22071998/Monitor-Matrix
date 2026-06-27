@@ -19,20 +19,21 @@ void URLStrategy::launch(MonitorInfo& monitor, AppPosition position, const QRect
 		return;
 	}
 
-	QUrl url(m_url);
+	QString launchUrl = m_url;
+	QUrl url(launchUrl);
 	if (!url.isValid() || url.scheme().isEmpty()) {
-		QUrl assumed("http://" + m_url);
+		QUrl assumed("http://" + launchUrl);
 		if (!assumed.isValid()) {
-			qWarning() << "Invalid URL:" << m_url;
+			qWarning() << "Invalid URL:" << launchUrl;
 			return;
 		}
-		m_url = assumed.toString();
+		launchUrl = assumed.toString();
 	}
 
 	if (zoneRect.isNull()) {
-		p_launchService->launchURL(m_url, monitor, position);
+		p_launchService->launchURL(launchUrl, monitor, position);
 	}
 	else {
-		p_launchService->launchURL(m_url, monitor, position, zoneRect);
+		p_launchService->launchURL(launchUrl, monitor, position, zoneRect);
 	}
 }

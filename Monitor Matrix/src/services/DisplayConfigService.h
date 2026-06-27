@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QVector>
 
-#include "../models/DisplayConfigTypes.h"
+#include "../models/DisplayConfig.h"
 
 class DisplayConfigService : public QObject {
     Q_OBJECT

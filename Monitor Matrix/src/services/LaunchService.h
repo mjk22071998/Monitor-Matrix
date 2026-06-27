@@ -1,16 +1,13 @@
 #pragma once
 #include <qstring.h>
-#include <qmutex.h>
+#include <qrect.h>
 #include "../models/MonitorInfo.h"
-#include "../enums/AppPositionEnum.h"
+#include "../enums/AppPosition.h"
 
 class LaunchService{
 private:
-	static LaunchService* p_instance;
 	explicit LaunchService();
 	static QString getChromePath();
-
-	QMutex m_mutex;
 
 public:
 	static LaunchService* getInstance();

@@ -4,7 +4,6 @@
 #include "../services/DisplayConfigService.h"
 
 #include <QCheckBox>
-#include <QCloseEvent>
 #include <QComboBox>
 #include <QGraphicsView>
 #include <QGroupBox>
@@ -19,17 +18,16 @@ ScreenConfigDialog::ScreenConfigDialog(QWidget* parent)
 {
     m_service = new DisplayConfigService(this);
 
+    connect(m_service, &DisplayConfigService::applyFailed,
+        this, [this](const QString& message) {
+            m_lastApplyError = message;
+        });
+
     buildUi();
     loadDisplays();
 
     setWindowTitle("Screen Configuration");
     resize(900, 650);
-}
-
-void ScreenConfigDialog::closeEvent(QCloseEvent* event)
-{
-    accept();
-    event->accept();
 }
 
 void ScreenConfigDialog::buildUi()
@@ -65,9 +63,14 @@ void ScreenConfigDialog::buildUi()
     auto* buttonLayout = new QHBoxLayout();
     buttonLayout->addStretch();
 
-    m_continueButton = new QPushButton("Continue", this);
-    m_continueButton->setObjectName("runButton");
-    buttonLayout->addWidget(m_continueButton);
+    m_saveButton = new QPushButton("Save", this);
+    m_saveButton->setObjectName("runButton");
+    m_saveButton->setEnabled(false);
+    buttonLayout->addWidget(m_saveButton);
+
+    m_closeButton = new QPushButton("Close", this);
+    m_closeButton->setObjectName("secondaryButton");
+    buttonLayout->addWidget(m_closeButton);
 
     mainLayout->addLayout(buttonLayout);
 
@@ -83,8 +86,11 @@ void ScreenConfigDialog::buildUi()
     connect(m_primaryCheck, &QCheckBox::toggled,
         this, &ScreenConfigDialog::onPrimaryChanged);
 
-    connect(m_continueButton, &QPushButton::clicked,
-        this, &ScreenConfigDialog::onContinueClicked);
+    connect(m_closeButton, &QPushButton::clicked,
+        this, &ScreenConfigDialog::reject);
+
+    connect(m_saveButton, &QPushButton::clicked,
+        this, &ScreenConfigDialog::onSaveClicked);
 }
 
 void ScreenConfigDialog::loadDisplays()
@@ -97,7 +103,7 @@ void ScreenConfigDialog::loadDisplays()
     if (!m_displays.isEmpty())
         onDisplaySelected(0);
 
-    updateContinueButton();
+    updateSaveButton();
 }
 
 bool ScreenConfigDialog::hasDisplayChanges() const
@@ -234,38 +240,42 @@ void ScreenConfigDialog::onLayoutChanged()
 void ScreenConfigDialog::markChanged()
 {
     m_hasChanges = true;
-    updateContinueButton();
+    updateSaveButton();
 }
 
-void ScreenConfigDialog::updateContinueButton()
+void ScreenConfigDialog::updateSaveButton()
 {
     m_displays = m_scene->displays();
     m_hasChanges = hasDisplayChanges();
 
-    m_continueButton->setText(m_hasChanges ? "Apply && Continue" : "Continue");
+    m_saveButton->setEnabled(m_hasChanges);
 }
 
-void ScreenConfigDialog::onContinueClicked()
+void ScreenConfigDialog::onSaveClicked()
 {
     m_displays = m_scene->displays();
     m_hasChanges = hasDisplayChanges();
 
     if (!m_hasChanges) {
-        accept();
         return;
     }
+
+    m_lastApplyError.clear();
 
     if (!m_service->applyDisplays(m_displays)) {
         QMessageBox::warning(
             this,
             "Display Settings",
-            "Could not apply display settings to Windows."
+            m_lastApplyError.isEmpty()
+            ? "Could not apply display settings to Windows."
+            : m_lastApplyError
         );
         return;
     }
 
     m_originalDisplays = m_displays;
     m_hasChanges = false;
+    updateSaveButton();
 
-    accept();
+    emit displaySettingsSaved();
 }

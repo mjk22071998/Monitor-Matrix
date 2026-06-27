@@ -1,5 +1,5 @@
 #pragma once
-#include "../enums/AppPositionEnum.h"
+#include "../enums/AppPosition.h"
 #include "../services/MonitorService.h"
 #include "../services/LaunchService.h"
 #include <qstring.h>

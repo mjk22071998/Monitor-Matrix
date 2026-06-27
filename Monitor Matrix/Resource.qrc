@@ -1,5 +1,16 @@
-﻿<RCC>
+<RCC>
     <qresource prefix="/styles">
-		<file>styles/app.qss</file>
+        <file>styles/app.qss</file>
+    </qresource>
+    <qresource prefix="/icons">
+        <file alias="action-run.svg">Resources/icons/action-run.svg</file>
+        <file alias="action-add.svg">Resources/icons/action-add.svg</file>
+        <file alias="action-remove.svg">Resources/icons/action-remove.svg</file>
+        <file alias="status-warning.svg">Resources/icons/status-warning.svg</file>
+        <file alias="status-check.svg">Resources/icons/status-check.svg</file>
+    </qresource>
+    <qresource prefix="/fonts">
+        <file alias="DMSans.ttf">Resources/fonts/DMSans.ttf</file>
+        <file alias="DMSans-Italic.ttf">Resources/fonts/DMSans-Italic.ttf</file>
     </qresource>
 </RCC>

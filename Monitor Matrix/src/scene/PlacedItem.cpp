@@ -7,6 +7,7 @@
 #include <qgraphicssceneevent.h>
 #include <qgraphicsview.h>
 #include <qpainter.h>
+#include <qpainterpath.h>
 #include <qpen.h>
 #include <qstyleoption.h>
 #include <qdebug.h>
@@ -15,6 +16,7 @@
 #include "PlacedItemHandles.h"
 #include "PlacedItemResize.h"
 #include "PlacedItemSnap.h"
+#include "../theme/AppTheme.h"
 
 PlacedItem::PlacedItem(const QString& placementId,
     const QString& appId,
@@ -35,13 +37,13 @@ PlacedItem::PlacedItem(const QString& placementId,
     setAcceptHoverEvents(true);
     setCursor(Qt::OpenHandCursor);
 
-    setPen(QPen(QColor(32, 210, 180, 230), 2.0));
-    setBrush(QColor(32, 210, 180, 30));
+    setPen(QPen(AppTheme::palette().placementBorder, 2.0));
+    setBrush(AppTheme::palette().placementFill);
 
     m_label = new QGraphicsTextItem(appName, this);
-    m_label->setDefaultTextColor(QColor(226, 226, 240));
+    m_label->setDefaultTextColor(AppTheme::palette().placementText);
 
-    QFont font("Arial", 9);
+    QFont font(AppTheme::fontFamily(), 9);
     font.setBold(true);
 
     m_label->setFont(font);
@@ -84,13 +86,17 @@ void PlacedItem::paint(QPainter* painter,
 {
     painter->setRenderHint(QPainter::Antialiasing);
 
+    if (m_label) {
+        m_label->setDefaultTextColor(AppTheme::palette().placementText);
+    }
+
     QColor borderColor = m_hasOverlap
-        ? QColor(255, 80, 80, 255)
-        : QColor(32, 210, 180, 230);
+        ? AppTheme::palette().placementOverlapBorder
+        : AppTheme::palette().placementBorder;
 
     QColor fillColor = m_hasOverlap
-        ? QColor(255, 80, 80, 45)
-        : QColor(32, 210, 180, 30);
+        ? AppTheme::palette().placementOverlapFill
+        : AppTheme::palette().placementFill;
 
     painter->setPen(QPen(borderColor, 2.0));
     painter->setBrush(fillColor);
@@ -104,8 +110,8 @@ void PlacedItem::paint(QPainter* painter,
     const qreal r = placedItemHandleRadiusFromTransform(itemToDevice, HANDLE_PX);
 
     QColor handleColor = m_hasOverlap
-        ? QColor(255, 80, 80, 255)
-        : QColor(32, 210, 180, 255);
+        ? AppTheme::palette().placementOverlapBorder
+        : AppTheme::palette().dockHoverBorder;
 
     painter->setPen(QPen(handleColor, 2.0));
     painter->setBrush(QColor(handleColor.red(), handleColor.green(), handleColor.blue(), 180));
@@ -263,12 +269,15 @@ void PlacedItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
         targetMonitor->setDockOverlayVisible(true);
         targetMonitor->updateDockHover(localPos);
         p_lastHighlightedMonitor = targetMonitor;
+        updateDragGuides(targetMonitor);
     }
     else {
         if (p_lastHighlightedMonitor) {
             p_lastHighlightedMonitor->setDockOverlayVisible(false);
             p_lastHighlightedMonitor = nullptr;
         }
+
+        hideCenterGuides();
     }
 }
 
@@ -391,7 +400,35 @@ void PlacedItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 
 QRectF PlacedItem::boundingRect() const
 {
-    return QGraphicsRectItem::boundingRect().adjusted(-12, -12, 12, 12);
+    return QGraphicsRectItem::boundingRect().adjusted(
+        -HANDLE_MARGIN_ITEM,
+        -HANDLE_MARGIN_ITEM,
+        HANDLE_MARGIN_ITEM,
+        HANDLE_MARGIN_ITEM
+    );
+}
+
+QPainterPath PlacedItem::shape() const
+{
+    QPainterPath path;
+    path.addRect(rect());
+
+    if (!isSelected()) {
+        return path;
+    }
+
+    const PlacedItemHandlePoints hp = placedItemHandlePoints(rect());
+    const QPointF points[] = {
+        hp.tl, hp.tm, hp.tr,
+        hp.ml,        hp.mr,
+        hp.bl, hp.bm, hp.br
+    };
+
+    for (const QPointF& point : points) {
+        path.addEllipse(point, HANDLE_MARGIN_ITEM, HANDLE_MARGIN_ITEM);
+    }
+
+    return path;
 }
 
 void PlacedItem::hoverMoveEvent(QGraphicsSceneHoverEvent* event)
@@ -430,19 +467,28 @@ void PlacedItem::updateResizeGuides(
         return;
     }
 
+    if ((m_verticalCenterGuide && m_verticalCenterGuide->parentItem() != monitor) ||
+        (m_horizontalCenterGuide && m_horizontalCenterGuide->parentItem() != monitor)) {
+        delete m_verticalCenterGuide;
+        delete m_horizontalCenterGuide;
+        m_verticalCenterGuide = nullptr;
+        m_horizontalCenterGuide = nullptr;
+    }
+
     QRectF monitorRect = monitor->rect();
 
     if (!m_verticalCenterGuide) {
         m_verticalCenterGuide = new QGraphicsLineItem(monitor);
-        m_verticalCenterGuide->setPen(QPen(QColor(255, 220, 80, 220), 1.5, Qt::DashLine));
         m_verticalCenterGuide->setZValue(9999);
     }
 
     if (!m_horizontalCenterGuide) {
         m_horizontalCenterGuide = new QGraphicsLineItem(monitor);
-        m_horizontalCenterGuide->setPen(QPen(QColor(255, 220, 80, 220), 1.5, Qt::DashLine));
         m_horizontalCenterGuide->setZValue(9999);
     }
+
+    m_verticalCenterGuide->setPen(QPen(AppTheme::palette().guide, 1.5, Qt::DashLine));
+    m_horizontalCenterGuide->setPen(QPen(AppTheme::palette().guide, 1.5, Qt::DashLine));
 
     m_verticalCenterGuide->setLine(
         verticalX,
@@ -460,6 +506,130 @@ void PlacedItem::updateResizeGuides(
 
     m_verticalCenterGuide->setVisible(showVertical);
     m_horizontalCenterGuide->setVisible(showHorizontal);
+}
+
+void PlacedItem::updateDragGuides(MonitorDropItem* monitor)
+{
+    if (!monitor) {
+        hideCenterGuides();
+        return;
+    }
+
+    const QRectF monitorRect = monitor->rect();
+    const QRectF draggedRect = monitor->mapRectFromScene(mapRectToScene(rect()));
+    const QPointF monitorCenter = monitorRect.center();
+
+    bool showVerticalGuide = false;
+    bool showHorizontalGuide = false;
+    qreal verticalGuideX = 0.0;
+    qreal horizontalGuideY = 0.0;
+    bool snapX = false;
+    bool snapY = false;
+    qreal bestDx = 0.0;
+    qreal bestDy = 0.0;
+    qreal bestAbsDx = CENTER_SNAP_PX + 1.0;
+    qreal bestAbsDy = CENTER_SNAP_PX + 1.0;
+
+    auto considerVertical = [&](qreal value, qreal target) {
+        const qreal delta = target - value;
+        const qreal distance = qAbs(delta);
+
+        if (distance <= CENTER_SNAP_PX && distance < bestAbsDx) {
+            snapX = true;
+            bestDx = delta;
+            bestAbsDx = distance;
+            showVerticalGuide = true;
+            verticalGuideX = target;
+        }
+    };
+
+    auto considerHorizontal = [&](qreal value, qreal target) {
+        const qreal delta = target - value;
+        const qreal distance = qAbs(delta);
+
+        if (distance <= CENTER_SNAP_PX && distance < bestAbsDy) {
+            snapY = true;
+            bestDy = delta;
+            bestAbsDy = distance;
+            showHorizontalGuide = true;
+            horizontalGuideY = target;
+        }
+    };
+
+    considerVertical(draggedRect.left(), monitorCenter.x());
+    considerVertical(draggedRect.center().x(), monitorCenter.x());
+    considerVertical(draggedRect.right(), monitorCenter.x());
+
+    considerHorizontal(draggedRect.top(), monitorCenter.y());
+    considerHorizontal(draggedRect.center().y(), monitorCenter.y());
+    considerHorizontal(draggedRect.bottom(), monitorCenter.y());
+
+    for (QGraphicsItem* child : monitor->childItems()) {
+        const PlacedItem* other = dynamic_cast<const PlacedItem*>(child);
+
+        if (!other || other == this) {
+            continue;
+        }
+
+        const QRectF otherRect = monitor->mapRectFromItem(other, other->rect());
+
+        const qreal draggedX[] = {
+            draggedRect.left(),
+            draggedRect.center().x(),
+            draggedRect.right()
+        };
+        const qreal otherX[] = {
+            otherRect.left(),
+            otherRect.center().x(),
+            otherRect.right()
+        };
+
+        for (qreal value : draggedX) {
+            for (qreal target : otherX) {
+                considerVertical(value, target);
+            }
+        }
+
+        const qreal draggedY[] = {
+            draggedRect.top(),
+            draggedRect.center().y(),
+            draggedRect.bottom()
+        };
+        const qreal otherY[] = {
+            otherRect.top(),
+            otherRect.center().y(),
+            otherRect.bottom()
+        };
+
+        for (qreal value : draggedY) {
+            for (qreal target : otherY) {
+                considerHorizontal(value, target);
+            }
+        }
+    }
+
+    if (snapX || snapY) {
+        QRectF snappedRect = draggedRect;
+        snappedRect.translate(snapX ? bestDx : 0.0, snapY ? bestDy : 0.0);
+
+        const QPointF sceneTopLeft = monitor->mapToScene(snappedRect.topLeft());
+        const QPointF snappedItemPos = parentItem()
+            ? parentItem()->mapFromScene(sceneTopLeft)
+            : sceneTopLeft;
+
+        if (!qFuzzyCompare(snappedItemPos.x(), pos().x()) ||
+            !qFuzzyCompare(snappedItemPos.y(), pos().y())) {
+            setPos(snappedItemPos);
+        }
+    }
+
+    updateResizeGuides(
+        monitor,
+        showVerticalGuide,
+        showHorizontalGuide,
+        verticalGuideX,
+        horizontalGuideY
+    );
 }
 
 void PlacedItem::hideCenterGuides()

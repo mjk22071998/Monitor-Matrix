@@ -12,6 +12,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\services\DisplayConfigService.cpp" />
+    <ClCompile Include="src\services\AppCatalogService.cpp" />
+    <ClCompile Include="src\platform\windows\WindowsDisplayModes.cpp" />
+    <ClCompile Include="src\platform\windows\WindowsDisplayTopology.cpp" />
+    <ClCompile Include="src\platform\windows\WindowsShortcutResolver.cpp" />
+    <ClCompile Include="src\platform\windows\WindowsTaskRunner.cpp" />
+    <ClCompile Include="src\theme\AppTheme.cpp" />
+    <ClCompile Include="src\utils\AppLogger.cpp" />
     <ClCompile Include="src\scene\MonitorTopologyItem.cpp" />
     <ClCompile Include="src\scene\MonitorTopologyScene.cpp">
       <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">input</DynamicSource>
@@ -19,7 +26,9 @@
       <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Release|x64'">input</DynamicSource>
       <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Filename).moc</QtMocFileName>
     </ClCompile>
-    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\dialog\AppEditDialog.cpp" />
+    <ClCompile Include="src\dialog\AuthDialog.cpp" />
     <ClCompile Include="src\dialog\ScreenConfigDialog.cpp" />
     <ClCompile Include="src\managers\ConfigManager.cpp" />
     <ClCompile Include="src\managers\LayoutManager.cpp" />
@@ -35,20 +44,31 @@
     <ClCompile Include="src\scene\PlacedItemResize.cpp" />
     <ClCompile Include="src\scene\PlacedItemSnap.cpp" />
     <ClCompile Include="src\services\LaunchService.cpp" />
+    <ClCompile Include="src\services\LaunchProcess.cpp" />
+    <ClCompile Include="src\services\LaunchWindowPlacement.cpp" />
+    <ClCompile Include="src\services\LayoutLaunchService.cpp" />
     <ClCompile Include="src\services\MonitorService.cpp" />
     <ClCompile Include="src\strategies\ExecutableStrategy.cpp" />
     <ClCompile Include="src\strategies\LaunchStrategy.cpp" />
     <ClCompile Include="src\strategies\URLStrategy.cpp" />
     <ClCompile Include="src\views\AppListView.cpp" />
     <ClCompile Include="src\views\MainWindow.cpp" />
+    <ClCompile Include="src\views\MainWindowAppManagement.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="src\dialog\AppEditDialog.h" />
+    <QtMoc Include="src\dialog\AuthDialog.h" />
     <QtMoc Include="src\dialog\ScreenConfigDialog.h" />
     <QtMoc Include="src\services\DisplayConfigService.h" />
+    <ClInclude Include="src\services\AppCatalogService.h" />
     <ClInclude Include="src\scene\MonitorTopologyItem.h" />
     <QtMoc Include="src\scene\MonitorTopologyScene.h" />
-    <ClInclude Include="src\models\DisplayConfigTypes.h" />
-    <ClInclude Include="src\enums\AppPositionEnum.h" />
+    <ClInclude Include="src\models\DisplayConfig.h" />
+    <ClInclude Include="src\platform\windows\WindowsDisplayModes.h" />
+    <ClInclude Include="src\platform\windows\WindowsDisplayTopology.h" />
+    <ClInclude Include="src\platform\windows\WindowsShortcutResolver.h" />
+    <ClInclude Include="src\platform\windows\WindowsTaskRunner.h" />
+    <ClInclude Include="src\enums\AppPosition.h" />
     <ClInclude Include="src\managers\ConfigManager.h" />
     <ClInclude Include="src\managers\LayoutManager.h" />
     <ClInclude Include="src\models\AppItem.h" />
@@ -60,6 +80,11 @@
     <ClInclude Include="src\scene\PlacedItemResize.h" />
     <ClInclude Include="src\scene\PlacedItemSnap.h" />
     <ClInclude Include="src\services\LaunchService.h" />
+    <ClInclude Include="src\services\LaunchProcess.h" />
+    <ClInclude Include="src\services\LaunchWindowPlacement.h" />
+    <ClInclude Include="src\services\LayoutLaunchService.h" />
+    <ClInclude Include="src\theme\AppTheme.h" />
+    <ClInclude Include="src\utils\AppLogger.h" />
     <ClInclude Include="src\strategies\ExecutableStrategy.h" />
     <ClInclude Include="src\strategies\LaunchStrategy.h" />
     <ClInclude Include="src\strategies\URLStrategy.h" />
@@ -71,8 +96,6 @@
   <ItemGroup>
     <None Include="..\x64\Debug\config\apps.json" />
     <None Include="..\x64\Release\config\apps.json" />
-    <None Include="cpp.hint" />
-    <None Include="README.md" />
     <None Include="styles\app.qss" />
   </ItemGroup>
   <ItemGroup>
@@ -91,7 +114,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v145</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
@@ -110,12 +133,20 @@
     <Import Project="$(QtMsBuild)\qt_defaults.props" />
   </ImportGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <QtInstall>6.11.0_msvc2022_64</QtInstall>
-    <QtModules>concurrent;core;gui;widgets</QtModules>
+    <QtInstall>6.11.1_msvc2022_64</QtInstall>
+    <QtModules>core;gui;widgets</QtModules>
+    <QMakeExtraArgs>QMAKE_MSC_VER=1951</QMakeExtraArgs>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <QtInstall>6.11.0_msvc2022_64</QtInstall>
-    <QtModules>concurrent;core;gui;widgets</QtModules>
+    <QtInstall>6.11.1_msvc2022_64</QtInstall>
+    <QtModules>core;gui;widgets</QtModules>
+    <QMakeExtraArgs>QMAKE_MSC_VER=1951</QMakeExtraArgs>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.props')">
     <Import Project="$(QtMsBuild)\qt.props" />
@@ -127,9 +158,9 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/FS /Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard_C>Default</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -143,9 +174,8 @@
       <DebugInformationFormat />
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/FS /Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

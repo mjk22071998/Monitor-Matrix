@@ -6,7 +6,7 @@
 #include <QVector>
 #include <QGraphicsLineItem>
 
-#include "../models/DisplayConfigTypes.h"
+#include "../models/DisplayConfig.h"
 
 class MonitorTopologyItem;
 

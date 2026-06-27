@@ -4,7 +4,7 @@
 #include <qgraphicsitem.h>
 #include <qvariant.h>
 
-#include "../enums/AppPositionEnum.h"
+#include "../enums/AppPosition.h"
 
 class MonitorDropItem;
 
@@ -38,6 +38,7 @@ public:
     bool hasOverlap() const;
 
     QRectF boundingRect() const override;
+    QPainterPath shape() const override;
 
 signals:
     void moveRequested(
@@ -88,7 +89,7 @@ private:
 
     static constexpr qreal HANDLE_PX = 4.5;
     static constexpr qreal HANDLE_HIT_PX = 9.0;
-    static constexpr qreal HANDLE_MARGIN_ITEM = 80.0;
+    static constexpr qreal HANDLE_MARGIN_ITEM = 192.0;
 
     void clearDragHighlight();
 
@@ -100,5 +101,6 @@ private:
         qreal horizontalY
     );
 
+    void updateDragGuides(MonitorDropItem* monitor);
     void hideCenterGuides();
 };
