@@ -188,53 +188,14 @@ ApplicationWindow {
         }
 
         // Central Canvas Area
-        Rectangle {
-            id: canvasArea
+        CanvasView {
+            id: canvasView
             anchors.top: parent.top
             anchors.left: appSidebar.right
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            color: Theme.bgCanvas
-
-            Column {
-                anchors.centerIn: parent
-                spacing: Theme.spacingMd
-
-                Grid {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    columns: 2
-                    spacing: 4
-                    Repeater {
-                        model: 4
-                        Rectangle {
-                            required property int index
-                            width: 16
-                            height: 12
-                            radius: 2
-                            color: index === 0 ? Theme.accentCyan : Theme.bgSurfaceHover
-                            border.color: Theme.borderSubtle
-                            border.width: 1
-                        }
-                    }
-                }
-
-                Text {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: "Screen Drop Studio Matrix Canvas"
-                    color: Theme.textPrimary
-                    font.family: Theme.fontFamily
-                    font.pixelSize: Theme.fontSizeMedium
-                    font.weight: Theme.fontWeightMedium
-                }
-
-                Text {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: "Drag applications from the catalog sidebar onto your monitors"
-                    color: Theme.textMuted
-                    font.family: Theme.fontFamily
-                    font.pixelSize: Theme.fontSizeSmall
-                }
-            }
+            canvasModel: typeof canvasModel !== "undefined" ? canvasModel : (typeof monitorCanvasModel !== "undefined" ? monitorCanvasModel : null)
+            placementModel: typeof placementModel !== "undefined" ? placementModel : null
         }
     }
 

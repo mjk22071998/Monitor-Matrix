@@ -123,7 +123,11 @@
     <None Include="qml\components\HeaderBar.qml" />
     <None Include="qml\components\OverlapStatusPill.qml" />
     <None Include="qml\components\NotificationToast.qml" />
+    <None Include="qml\components\PlacedAppItem.qml" />
+    <None Include="qml\components\MonitorItem.qml" />
+    <None Include="qml\components\CanvasControls.qml" />
     <None Include="qml\views\AppSidebar.qml" />
+    <None Include="qml\views\CanvasView.qml" />
     <None Include="qml\dialogs\AppEditModal.qml" />
   </ItemGroup>
   <ItemGroup>

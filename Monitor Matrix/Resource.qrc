@@ -20,7 +20,11 @@
         <file>qml/components/HeaderBar.qml</file>
         <file>qml/components/OverlapStatusPill.qml</file>
         <file>qml/components/NotificationToast.qml</file>
+        <file>qml/components/PlacedAppItem.qml</file>
+        <file>qml/components/MonitorItem.qml</file>
+        <file>qml/components/CanvasControls.qml</file>
         <file>qml/views/AppSidebar.qml</file>
+        <file>qml/views/CanvasView.qml</file>
         <file>qml/dialogs/AppEditModal.qml</file>
     </qresource>
 </RCC>

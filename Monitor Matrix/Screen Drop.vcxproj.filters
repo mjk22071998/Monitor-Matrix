@@ -375,7 +375,19 @@
     <None Include="qml\components\NotificationToast.qml">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="qml\components\PlacedAppItem.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="qml\components\MonitorItem.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="qml\components\CanvasControls.qml">
+      <Filter>Resource Files</Filter>
+    </None>
     <None Include="qml\views\AppSidebar.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="qml\views\CanvasView.qml">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="qml\dialogs\AppEditModal.qml">
