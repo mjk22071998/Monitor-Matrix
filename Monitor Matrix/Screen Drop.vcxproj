@@ -56,8 +56,12 @@
     <ClCompile Include="src\models\qml\AppCatalogModel.cpp" />
     <ClCompile Include="src\models\qml\MonitorCanvasModel.cpp" />
     <ClCompile Include="src\models\qml\PlacementModel.cpp" />
+    <ClCompile Include="src\controllers\ScreenDropEngine.cpp" />
+    <ClCompile Include="src\controllers\DisplayConfigBridge.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="src\controllers\ScreenDropEngine.h" />
+    <QtMoc Include="src\controllers\DisplayConfigBridge.h" />
     <QtMoc Include="src\models\qml\AppCatalogModel.h" />
     <QtMoc Include="src\models\qml\MonitorCanvasModel.h" />
     <QtMoc Include="src\models\qml\PlacementModel.h" />
@@ -66,6 +70,10 @@
       <QtMocFileName>%(Filename).moc</QtMocFileName>
     </QtMoc>
     <QtMoc Include="src\tests\ModelUnitTests.cpp" Condition="'$(Test)'=='ModelUnitTests'">
+      <DynamicSource>input</DynamicSource>
+      <QtMocFileName>%(Filename).moc</QtMocFileName>
+    </QtMoc>
+    <QtMoc Include="src\tests\EngineTests.cpp" Condition="'$(Test)'=='EngineTests'">
       <DynamicSource>input</DynamicSource>
       <QtMocFileName>%(Filename).moc</QtMocFileName>
     </QtMoc>

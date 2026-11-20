@@ -28,11 +28,17 @@
     <Filter Include="Header Files\models\qml">
       <UniqueIdentifier>{6f2b1af3-b386-49d6-b698-a8a4f6ce826d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\controllers">
+      <UniqueIdentifier>{e8f12345-6789-4abc-def0-123456789abc}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\models">
       <UniqueIdentifier>{a1b2c3d4-e5f6-7890-abcd-123456789012}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\models\qml">
       <UniqueIdentifier>{a1b2c3d4-e5f6-7890-abcd-123456789013}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\controllers">
+      <UniqueIdentifier>{a8f12345-6789-4abc-def0-123456789abc}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\views">
       <UniqueIdentifier>{88818707-5f56-430a-8f61-f9a58c9ef6fc}</UniqueIdentifier>
@@ -103,6 +109,9 @@
       <Filter>Source Files\tests</Filter>
     </ClCompile>
     <ClCompile Include="src\tests\ModelUnitTests.cpp">
+      <Filter>Source Files\tests</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tests\EngineTests.cpp">
       <Filter>Source Files\tests</Filter>
     </ClCompile>
     <ClCompile Include="src\managers\ConfigManager.cpp">
@@ -206,6 +215,12 @@
     </ClCompile>
     <ClCompile Include="src\models\qml\PlacementModel.cpp">
       <Filter>Source Files\models\qml</Filter>
+    </ClCompile>
+    <ClCompile Include="src\controllers\ScreenDropEngine.cpp">
+      <Filter>Source Files\controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\controllers\DisplayConfigBridge.cpp">
+      <Filter>Source Files\controllers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -324,6 +339,12 @@
     </QtMoc>
     <QtMoc Include="src\models\qml\PlacementModel.h">
       <Filter>Header Files\models\qml</Filter>
+    </QtMoc>
+    <QtMoc Include="src\controllers\ScreenDropEngine.h">
+      <Filter>Header Files\controllers</Filter>
+    </QtMoc>
+    <QtMoc Include="src\controllers\DisplayConfigBridge.h">
+      <Filter>Header Files\controllers</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
