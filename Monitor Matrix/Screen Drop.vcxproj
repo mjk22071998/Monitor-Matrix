@@ -53,9 +53,19 @@
     <ClCompile Include="src\views\AppListView.cpp" />
     <ClCompile Include="src\views\MainWindow.cpp" />
     <ClCompile Include="src\views\MainWindowAppManagement.cpp" />
+    <ClCompile Include="src\models\qml\AppCatalogModel.cpp" />
+    <ClCompile Include="src\models\qml\MonitorCanvasModel.cpp" />
+    <ClCompile Include="src\models\qml\PlacementModel.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="src\models\qml\AppCatalogModel.h" />
+    <QtMoc Include="src\models\qml\MonitorCanvasModel.h" />
+    <QtMoc Include="src\models\qml\PlacementModel.h" />
     <QtMoc Include="src\tests\SanityTest.cpp" Condition="'$(Test)'=='SanityTest'">
+      <DynamicSource>input</DynamicSource>
+      <QtMocFileName>%(Filename).moc</QtMocFileName>
+    </QtMoc>
+    <QtMoc Include="src\tests\ModelUnitTests.cpp" Condition="'$(Test)'=='ModelUnitTests'">
       <DynamicSource>input</DynamicSource>
       <QtMocFileName>%(Filename).moc</QtMocFileName>
     </QtMoc>
