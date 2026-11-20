@@ -408,7 +408,7 @@ Rectangle {
                     height: 1
                 }
 
-                Drag.active: dragMouseArea.drag.active
+                Drag.active: cardMouseArea.drag.active
                 Drag.source: delegateItem
                 Drag.dragType: Drag.Automatic
                 Drag.hotSpot.x: delegateCard.width / 2
@@ -445,19 +445,44 @@ Rectangle {
                     id: delegateCard
                     anchors.fill: parent
                     radius: Theme.radiusMd
-                    color: dragMouseArea.drag.active
+                    color: cardMouseArea.drag.active
                            ? Theme.bgSurfaceActive
-                           : (delegateMouse.containsMouse ? Theme.bgSurfaceHover : Theme.bgSurface)
-                    border.color: dragMouseArea.drag.active
+                           : (cardMouseArea.containsMouse ? Theme.bgSurfaceHover : Theme.bgSurface)
+                    border.color: cardMouseArea.drag.active
                                   ? Theme.accentCyan
-                                  : (delegateMouse.containsMouse ? Theme.borderStrong : Theme.borderSubtle)
+                                  : (cardMouseArea.containsMouse ? Theme.borderStrong : Theme.borderSubtle)
                     border.width: 1
-                    opacity: dragMouseArea.drag.active ? 0.65 : 1.0
+                    opacity: cardMouseArea.drag.active ? 0.65 : 1.0
 
                     Behavior on color { ColorAnimation { duration: Theme.durationFast } }
                     Behavior on border.color { ColorAnimation { duration: Theme.durationFast } }
 
+                    // Card Mouse Area for Hover, Context Menu, and Dragging
+                    MouseArea {
+                        id: cardMouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        acceptedButtons: Qt.LeftButton | Qt.RightButton
+                        cursorShape: drag.active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
+
+                        drag.target: dragProxy
+                        drag.axis: Drag.XAndYAxis
+                        drag.threshold: 5
+
+                        onClicked: (mouse) => {
+                            if (mouse.button === Qt.RightButton) {
+                                contextMenu.popup();
+                            }
+                        }
+
+                        onReleased: {
+                            dragProxy.x = 0;
+                            dragProxy.y = 0;
+                        }
+                    }
+
                     Row {
+                        z: 1
                         anchors.fill: parent
                         anchors.leftMargin: Theme.spacingSm
                         anchors.rightMargin: Theme.spacingSm
@@ -603,12 +628,13 @@ Rectangle {
                             // Context Menu Button (Hover visible)
                             Rectangle {
                                 id: menuBtn
+                                z: 2
                                 anchors.verticalCenter: parent.verticalCenter
                                 width: 20
                                 height: 20
                                 radius: Theme.radiusSm
                                 color: menuBtnMouse.containsMouse ? Theme.bgSurfaceActive : "transparent"
-                                visible: delegateMouse.containsMouse
+                                visible: cardMouseArea.containsMouse || menuBtnMouse.containsMouse
 
                                 Text {
                                     anchors.centerIn: parent
@@ -632,40 +658,9 @@ Rectangle {
                                 text: "⋮⋮"
                                 color: Theme.textMuted
                                 font.pixelSize: 11
-                                visible: !model.isPlaced && delegateMouse.containsMouse && !menuBtn.visible
+                                visible: !model.isPlaced && cardMouseArea.containsMouse && !menuBtn.visible
                                 opacity: 0.6
                             }
-                        }
-                    }
-
-                    // Card Mouse Area for Hover, Context Menu, and Dragging
-                    MouseArea {
-                        id: delegateMouse
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        acceptedButtons: Qt.RightButton
-                        cursorShape: dragMouseArea.drag.active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
-                        onClicked: (mouse) => {
-                            if (mouse.button === Qt.RightButton) {
-                                contextMenu.popup();
-                            }
-                        }
-                    }
-
-                    MouseArea {
-                        id: dragMouseArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        acceptedButtons: Qt.LeftButton
-                        cursorShape: drag.active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
-
-                        drag.target: dragProxy
-                        drag.axis: Drag.XAndYAxis
-                        drag.threshold: 5
-
-                        onReleased: {
-                            dragProxy.x = 0;
-                            dragProxy.y = 0;
                         }
                     }
                 }
