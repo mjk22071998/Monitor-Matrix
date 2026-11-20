@@ -123,6 +123,8 @@
     <None Include="qml\components\HeaderBar.qml" />
     <None Include="qml\components\OverlapStatusPill.qml" />
     <None Include="qml\components\NotificationToast.qml" />
+    <None Include="qml\views\AppSidebar.qml" />
+    <None Include="qml\dialogs\AppEditModal.qml" />
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="Resource.qrc" />

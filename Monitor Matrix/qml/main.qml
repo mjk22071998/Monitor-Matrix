@@ -4,6 +4,8 @@ import QtQuick.Controls
 import QtQuick.Dialogs
 import "theme"
 import "components"
+import "views"
+import "dialogs"
 
 ApplicationWindow {
     id: root
@@ -168,8 +170,30 @@ ApplicationWindow {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
 
+        // Left App Catalog Sidebar
+        AppSidebar {
+            id: appSidebar
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            catalogModel: typeof appCatalogModel !== "undefined" ? appCatalogModel : (typeof catalogModel !== "undefined" ? catalogModel : null)
+
+            onAddAppClicked: {
+                appEditModal.openNew(0);
+            }
+
+            onAppRemoved: (id, name) => {
+                notificationToast.show("App Removed", "'" + name + "' was removed from the catalog.", false);
+            }
+        }
+
+        // Central Canvas Area
         Rectangle {
-            anchors.fill: parent
+            id: canvasArea
+            anchors.top: parent.top
+            anchors.left: appSidebar.right
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
             color: Theme.bgCanvas
 
             Column {
@@ -197,7 +221,7 @@ ApplicationWindow {
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: "Screen Drop Studio Matrix Canvas"
-                    color: Theme.textSecondary
+                    color: Theme.textPrimary
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontSizeMedium
                     font.weight: Theme.fontWeightMedium
@@ -205,12 +229,26 @@ ApplicationWindow {
 
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: "Canvas view and catalog sidebar ready for integration"
+                    text: "Drag applications from the catalog sidebar onto your monitors"
                     color: Theme.textMuted
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontSizeSmall
                 }
             }
+        }
+    }
+
+    // Add / Edit Application Modal Dialog
+    AppEditModal {
+        id: appEditModal
+        catalogModel: typeof appCatalogModel !== "undefined" ? appCatalogModel : (typeof catalogModel !== "undefined" ? catalogModel : null)
+
+        onAppAdded: (name, type) => {
+            notificationToast.show(
+                type === "URL" ? "Web Link Added" : "Application Added",
+                "'" + name + "' was successfully added to your catalog.",
+                false
+            );
         }
     }
 

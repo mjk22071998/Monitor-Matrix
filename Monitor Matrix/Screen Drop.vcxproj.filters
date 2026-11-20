@@ -375,6 +375,12 @@
     <None Include="qml\components\NotificationToast.qml">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="qml\views\AppSidebar.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="qml\dialogs\AppEditModal.qml">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="Resource.qrc">

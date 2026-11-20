@@ -90,6 +90,7 @@ int main(int argc, char** argv) {
         context->setContextProperty(QStringLiteral("screenDropEngine"), &screenDropEngine);
         context->setContextProperty(QStringLiteral("displayConfigBridge"), &displayConfigBridge);
         context->setContextProperty(QStringLiteral("catalogModel"), &catalogModel);
+        context->setContextProperty(QStringLiteral("appCatalogModel"), &catalogModel);
         context->setContextProperty(QStringLiteral("canvasModel"), &canvasModel);
         context->setContextProperty(QStringLiteral("placementModel"), &placementModel);
     }
