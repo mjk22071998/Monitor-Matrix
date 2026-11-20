@@ -17,3 +17,5 @@ x64/**
 # Unignore the specific files
 !x64/Debug/config/apps.json
 !x64/Release/config/apps.json
+graphify-out/
+.superpowers/
