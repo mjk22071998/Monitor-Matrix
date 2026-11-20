@@ -13,4 +13,7 @@
         <file alias="DMSans.ttf">Resources/fonts/DMSans.ttf</file>
         <file alias="DMSans-Italic.ttf">Resources/fonts/DMSans-Italic.ttf</file>
     </qresource>
+    <qresource prefix="/qml">
+        <file>qml/main.qml</file>
+    </qresource>
 </RCC>

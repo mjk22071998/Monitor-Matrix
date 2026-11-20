@@ -82,10 +82,16 @@
     <Filter Include="Header Files\platform\windows">
       <UniqueIdentifier>{3b1f68f6-0a50-4436-97fc-c71464b48cc1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\tests">
+      <UniqueIdentifier>{a1b2c3d4-e5f6-7890-abcd-ef1234567890}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tests\SanityTest.cpp">
+      <Filter>Source Files\tests</Filter>
     </ClCompile>
     <ClCompile Include="src\managers\ConfigManager.cpp">
       <Filter>Source Files\manager</Filter>
@@ -298,6 +304,9 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="styles\app.qss">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="qml\main.qml">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
