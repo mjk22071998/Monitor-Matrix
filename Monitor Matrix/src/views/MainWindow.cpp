@@ -20,7 +20,6 @@
 #include <qfileinfo.h>
 #include <qurl.h>
 #include "../managers/LayoutManager.h"
-#include "../dialog/AuthDialog.h"
 #include "../dialog/ScreenConfigDialog.h"
 #include "../utils/AppLogger.h"
 
@@ -226,7 +225,7 @@ void MainWindow::openLayout()
 		qDebug() << fileName << " File loaded";
 	}
 	else {
-		QMessageBox::warning(this, "Error", "Cannot load file " + m_currentFile);
+		QMessageBox::warning(this, "Error", "Cannot load file " + fileName);
 		return;
 	}
 
@@ -283,10 +282,6 @@ void MainWindow::openLayout()
 
 void MainWindow::openScreenSettings()
 {
-	if (!AuthDialog::authenticate(this, QStringLiteral("screen configuration"))) {
-		return;
-	}
-
 	ScreenConfigDialog screenDialog(this);
 
 	connect(&screenDialog, &ScreenConfigDialog::displaySettingsSaved, this, [this]() {

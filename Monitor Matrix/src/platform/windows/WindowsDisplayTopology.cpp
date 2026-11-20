@@ -72,16 +72,6 @@ DWORD displayConfigQueryFlags()
     return QDC_ONLY_ACTIVE_PATHS | QDC_VIRTUAL_MODE_AWARE;
 }
 
-DWORD setDisplayConfigFlags()
-{
-    return SDC_USE_SUPPLIED_DISPLAY_CONFIG |
-        SDC_APPLY |
-        SDC_SAVE_TO_DATABASE |
-        SDC_ALLOW_CHANGES |
-        SDC_ALLOW_PATH_ORDER_CHANGES |
-        SDC_VIRTUAL_MODE_AWARE;
-}
-
 bool queryActiveDisplayConfig(DisplayConfigSnapshot& snapshot,
     QString* errorMessage = nullptr)
 {
@@ -376,83 +366,6 @@ QVector<WindowsNativeMonitor> nativeMonitorsFromSnapshot(
     }
 
     return result;
-}
-
-QHash<QString, int> sourceModeIndexesByDeviceName(
-    const DisplayConfigSnapshot& snapshot)
-{
-    QHash<QString, int> result;
-
-    for (const DISPLAYCONFIG_PATH_INFO& path : snapshot.paths) {
-        if ((path.flags & DISPLAYCONFIG_PATH_ACTIVE) == 0)
-            continue;
-
-        const QString deviceName = sourceDeviceName(path);
-
-        if (result.contains(deviceName))
-            continue;
-
-        const int sourceIndex =
-            sourceModeIndexForPath(path, snapshot.modes);
-
-        if (sourceIndex >= 0)
-            result.insert(deviceName, sourceIndex);
-    }
-
-    return result;
-}
-
-void movePathToOrderedList(QVector<DISPLAYCONFIG_PATH_INFO>& orderedPaths,
-    QVector<bool>& usedPaths,
-    const QVector<DISPLAYCONFIG_PATH_INFO>& paths,
-    const QString& deviceName)
-{
-    for (int i = 0; i < paths.size(); ++i) {
-        if (usedPaths[i])
-            continue;
-
-        if (sourceDeviceName(paths[i]) != deviceName)
-            continue;
-
-        orderedPaths.append(paths[i]);
-        usedPaths[i] = true;
-    }
-}
-
-void orderPathsByPrimarySelection(DisplayConfigSnapshot& snapshot,
-    const QVector<DisplayConfigInfo>& displays,
-    int primaryIndex)
-{
-    QVector<DISPLAYCONFIG_PATH_INFO> orderedPaths;
-    QVector<bool> usedPaths(snapshot.paths.size(), false);
-
-    if (primaryIndex >= 0 && primaryIndex < displays.size()) {
-        movePathToOrderedList(
-            orderedPaths,
-            usedPaths,
-            snapshot.paths,
-            displays[primaryIndex].deviceName
-        );
-    }
-
-    for (int i = 0; i < displays.size(); ++i) {
-        if (i == primaryIndex)
-            continue;
-
-        movePathToOrderedList(
-            orderedPaths,
-            usedPaths,
-            snapshot.paths,
-            displays[i].deviceName
-        );
-    }
-
-    for (int i = 0; i < snapshot.paths.size(); ++i) {
-        if (!usedPaths[i])
-            orderedPaths.append(snapshot.paths[i]);
-    }
-
-    snapshot.paths = orderedPaths;
 }
 
 #endif

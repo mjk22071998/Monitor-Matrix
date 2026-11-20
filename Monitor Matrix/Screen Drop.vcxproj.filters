@@ -153,9 +153,6 @@
     <ClCompile Include="src\dialog\AppEditDialog.cpp">
       <Filter>Source Files\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\dialog\AuthDialog.cpp">
-      <Filter>Source Files\dialog</Filter>
-    </ClCompile>
     <ClCompile Include="src\scene\MonitorTopologyItem.cpp">
       <Filter>Source Files\scene</Filter>
     </ClCompile>
@@ -284,9 +281,6 @@
       <Filter>Header Files\dialog</Filter>
     </QtMoc>
     <QtMoc Include="src\dialog\AppEditDialog.h">
-      <Filter>Header Files\dialog</Filter>
-    </QtMoc>
-    <QtMoc Include="src\dialog\AuthDialog.h">
       <Filter>Header Files\dialog</Filter>
     </QtMoc>
     <QtMoc Include="src\scene\MonitorTopologyScene.h">

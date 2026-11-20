@@ -28,7 +28,6 @@
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\dialog\AppEditDialog.cpp" />
-    <ClCompile Include="src\dialog\AuthDialog.cpp" />
     <ClCompile Include="src\dialog\ScreenConfigDialog.cpp" />
     <ClCompile Include="src\managers\ConfigManager.cpp" />
     <ClCompile Include="src\managers\LayoutManager.cpp" />
@@ -57,7 +56,6 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="src\dialog\AppEditDialog.h" />
-    <QtMoc Include="src\dialog\AuthDialog.h" />
     <QtMoc Include="src\dialog\ScreenConfigDialog.h" />
     <QtMoc Include="src\services\DisplayConfigService.h" />
     <ClInclude Include="src\services\AppCatalogService.h" />

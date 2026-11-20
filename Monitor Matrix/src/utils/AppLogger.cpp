@@ -5,7 +5,7 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
-#include <QMutex>
+#include <QRecursiveMutex>
 #include <QStandardPaths>
 #include <QTextStream>
 
@@ -18,10 +18,25 @@
 
 namespace {
 
-QMutex& logMutex()
+constexpr qint64 MaxLogSizeBytes = 10 * 1024 * 1024; // 10 MB
+
+QRecursiveMutex& logMutex()
 {
-    static QMutex mutex;
+    static QRecursiveMutex mutex;
     return mutex;
+}
+
+void rotateLogIfNeeded(const QString& filePath)
+{
+    if (filePath.isEmpty())
+        return;
+
+    QFileInfo info(filePath);
+    if (info.exists() && info.size() > MaxLogSizeBytes) {
+        const QString oldPath = filePath + QStringLiteral(".old");
+        QFile::remove(oldPath);
+        QFile::rename(filePath, oldPath);
+    }
 }
 
 QString& activeLogFilePath()
@@ -63,6 +78,8 @@ void messageHandler(QtMsgType type,
     const QString& message)
 {
     QMutexLocker locker(&logMutex());
+
+    rotateLogIfNeeded(activeLogFilePath());
 
     const QString timestamp =
         QDateTime::currentDateTime().toString(Qt::ISODateWithMs);

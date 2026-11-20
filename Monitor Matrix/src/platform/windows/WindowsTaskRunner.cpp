@@ -17,7 +17,15 @@ void CALLBACK runTaskCallback(PTP_CALLBACK_INSTANCE, void* context)
     auto* task = static_cast<std::function<void()>*>(context);
 
     if (task) {
-        (*task)();
+        try {
+            (*task)();
+        }
+        catch (const std::exception& ex) {
+            qCritical() << "Exception in WindowsTaskRunner background task:" << ex.what();
+        }
+        catch (...) {
+            qCritical() << "Unknown exception in WindowsTaskRunner background task.";
+        }
         delete task;
     }
 }

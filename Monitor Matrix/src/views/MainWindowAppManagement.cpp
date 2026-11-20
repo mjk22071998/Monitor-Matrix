@@ -8,7 +8,6 @@
 #include <qstatusbar.h>
 
 #include "../dialog/AppEditDialog.h"
-#include "../dialog/AuthDialog.h"
 
 namespace {
 
@@ -73,10 +72,6 @@ bool MainWindow::addUrlLink(const QString& url, const QString& displayName)
 
 void MainWindow::openAddAppDialog()
 {
-	if (!AuthDialog::authenticate(this, QStringLiteral("app management"))) {
-		return;
-	}
-
 	AppEditDialog dialog(this);
 
 	if (dialog.exec() != QDialog::Accepted) {
@@ -94,10 +89,6 @@ void MainWindow::openAddAppDialog()
 void MainWindow::addDroppedApplicationFiles(const QStringList& filePaths)
 {
 	if (filePaths.isEmpty()) {
-		return;
-	}
-
-	if (!AuthDialog::authenticate(this, QStringLiteral("app management"))) {
 		return;
 	}
 
@@ -123,10 +114,6 @@ void MainWindow::addDroppedApplicationFiles(const QStringList& filePaths)
 void MainWindow::removeApp(const QString& appId)
 {
 	if (appId.isEmpty()) {
-		return;
-	}
-
-	if (!AuthDialog::authenticate(this, QStringLiteral("app management"))) {
 		return;
 	}
 

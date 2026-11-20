@@ -331,7 +331,14 @@ bool applyDisplaySettingsApi(
     const QPoint primaryOffset = displays[primaryIndex].geometry.topLeft();
     QVector<PendingChange> pendingChanges;
 
+    QVector<int> displayOrder;
+    displayOrder.append(primaryIndex);
     for (int i = 0; i < displays.size(); ++i) {
+        if (i != primaryIndex)
+            displayOrder.append(i);
+    }
+
+    for (int i : displayOrder) {
         const DisplayConfigInfo& display = displays[i];
         DEVMODEW mode = {};
 

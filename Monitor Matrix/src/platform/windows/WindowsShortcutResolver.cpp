@@ -9,6 +9,7 @@
 #include <windows.h>
 #include <objbase.h>
 #include <shobjidl.h>
+#include <wrl/client.h>
 
 namespace {
 
@@ -91,7 +92,7 @@ bool resolveExecutableTarget(
         return false;
     }
 
-    IShellLinkW* shellLink = nullptr;
+    Microsoft::WRL::ComPtr<IShellLinkW> shellLink;
     HRESULT hr = CoCreateInstance(
         CLSID_ShellLink,
         nullptr,
@@ -108,11 +109,10 @@ bool resolveExecutableTarget(
         return false;
     }
 
-    IPersistFile* persistFile = nullptr;
-    hr = shellLink->QueryInterface(IID_PPV_ARGS(&persistFile));
+    Microsoft::WRL::ComPtr<IPersistFile> persistFile;
+    hr = shellLink.As(&persistFile);
 
     if (FAILED(hr) || !persistFile) {
-        shellLink->Release();
         setError(
             errorMessage,
             QStringLiteral("Cannot read shortcut file interface: %1")
@@ -127,8 +127,6 @@ bool resolveExecutableTarget(
     hr = persistFile->Load(shortcutNative.c_str(), STGM_READ);
 
     if (FAILED(hr)) {
-        persistFile->Release();
-        shellLink->Release();
         setError(
             errorMessage,
             QStringLiteral("Cannot load shortcut: %1")
@@ -146,9 +144,6 @@ bool resolveExecutableTarget(
         &findData,
         SLGP_UNCPRIORITY
     );
-
-    persistFile->Release();
-    shellLink->Release();
 
     if (FAILED(hr) || targetPath[0] == L'\0') {
         setError(
