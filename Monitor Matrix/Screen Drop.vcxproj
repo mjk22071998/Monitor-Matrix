@@ -118,6 +118,11 @@
     <None Include="..\x64\Release\config\apps.json" />
     <None Include="styles\app.qss" />
     <None Include="qml\main.qml" />
+    <None Include="qml\theme\Theme.qml" />
+    <None Include="qml\theme\qmldir" />
+    <None Include="qml\components\HeaderBar.qml" />
+    <None Include="qml\components\OverlapStatusPill.qml" />
+    <None Include="qml\components\NotificationToast.qml" />
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="Resource.qrc" />

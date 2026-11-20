@@ -360,6 +360,21 @@
     <None Include="qml\main.qml">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="qml\theme\Theme.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="qml\theme\qmldir">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="qml\components\HeaderBar.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="qml\components\OverlapStatusPill.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="qml\components\NotificationToast.qml">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="Resource.qrc">

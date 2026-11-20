@@ -13,7 +13,12 @@
         <file alias="DMSans.ttf">Resources/fonts/DMSans.ttf</file>
         <file alias="DMSans-Italic.ttf">Resources/fonts/DMSans-Italic.ttf</file>
     </qresource>
-    <qresource prefix="/qml">
+    <qresource prefix="/">
         <file>qml/main.qml</file>
+        <file>qml/theme/Theme.qml</file>
+        <file>qml/theme/qmldir</file>
+        <file>qml/components/HeaderBar.qml</file>
+        <file>qml/components/OverlapStatusPill.qml</file>
+        <file>qml/components/NotificationToast.qml</file>
     </qresource>
 </RCC>
