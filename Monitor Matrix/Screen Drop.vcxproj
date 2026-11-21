@@ -129,6 +129,7 @@
     <None Include="qml\views\AppSidebar.qml" />
     <None Include="qml\views\CanvasView.qml" />
     <None Include="qml\dialogs\AppEditModal.qml" />
+    <None Include="qml\dialogs\ScreenConfigSheet.qml" />
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="Resource.qrc" />

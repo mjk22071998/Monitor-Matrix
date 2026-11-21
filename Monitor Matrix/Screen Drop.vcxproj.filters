@@ -393,6 +393,9 @@
     <None Include="qml\dialogs\AppEditModal.qml">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="qml\dialogs\ScreenConfigSheet.qml">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="Resource.qrc">

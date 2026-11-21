@@ -24,6 +24,7 @@ void DisplayConfigBridge::setSelectedIndex(int index)
     if (m_selectedIndex != index) {
         m_selectedIndex = index;
         emit selectedIndexChanged(m_selectedIndex);
+        emit selectedDisplayChanged();
     }
 }
 
@@ -42,6 +43,7 @@ void DisplayConfigBridge::refreshDisplays()
 
     updateChangeState();
     emit displaysChanged();
+    emit selectedDisplayChanged();
 }
 
 QVariantList DisplayConfigBridge::displays() const
@@ -54,6 +56,11 @@ QVariantList DisplayConfigBridge::displays() const
     }
 
     return list;
+}
+
+QVariantMap DisplayConfigBridge::selectedDisplay() const
+{
+    return getDisplay(m_selectedIndex);
 }
 
 QVariantMap DisplayConfigBridge::getDisplay(int index) const
@@ -111,6 +118,7 @@ bool DisplayConfigBridge::setDisplayPosition(int displayIndex, int x, int y)
     m_displays[displayIndex].geometry.moveTo(x, y);
     updateChangeState();
     emit displaysChanged();
+    emit selectedDisplayChanged();
     return true;
 }
 
@@ -123,6 +131,7 @@ bool DisplayConfigBridge::setDisplayResolution(int displayIndex, int width, int 
     m_displays[displayIndex].geometry.setSize(QSize(width, height));
     updateChangeState();
     emit displaysChanged();
+    emit selectedDisplayChanged();
     return true;
 }
 
@@ -138,6 +147,7 @@ bool DisplayConfigBridge::setPrimaryDisplay(int displayIndex)
 
     updateChangeState();
     emit displaysChanged();
+    emit selectedDisplayChanged();
     return true;
 }
 
@@ -153,6 +163,7 @@ bool DisplayConfigBridge::applyChanges()
         m_originalDisplays = m_displays;
         updateChangeState();
         emit applySuccess();
+        emit selectedDisplayChanged();
         return true;
     }
 
@@ -161,11 +172,17 @@ bool DisplayConfigBridge::applyChanges()
     return false;
 }
 
+bool DisplayConfigBridge::applySettings()
+{
+    return applyChanges();
+}
+
 void DisplayConfigBridge::revertChanges()
 {
     m_displays = m_originalDisplays;
     updateChangeState();
     emit displaysChanged();
+    emit selectedDisplayChanged();
 }
 
 bool DisplayConfigBridge::computeHasChanges() const

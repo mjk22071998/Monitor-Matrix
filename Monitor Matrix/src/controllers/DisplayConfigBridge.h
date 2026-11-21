@@ -14,6 +14,8 @@ class DisplayConfigBridge : public QObject {
     Q_PROPERTY(int displayCount READ displayCount NOTIFY displaysChanged)
     Q_PROPERTY(bool hasChanges READ hasChanges NOTIFY hasChangesChanged)
     Q_PROPERTY(int selectedIndex READ selectedIndex WRITE setSelectedIndex NOTIFY selectedIndexChanged)
+    Q_PROPERTY(QVariantList displays READ displays NOTIFY displaysChanged)
+    Q_PROPERTY(QVariantMap selectedDisplay READ selectedDisplay NOTIFY selectedDisplayChanged)
 
 public:
     explicit DisplayConfigBridge(QObject* parent = nullptr);
@@ -27,6 +29,7 @@ public:
 
     Q_INVOKABLE void refreshDisplays();
     Q_INVOKABLE QVariantList displays() const;
+    Q_INVOKABLE QVariantMap selectedDisplay() const;
     Q_INVOKABLE QVariantMap getDisplay(int index) const;
     Q_INVOKABLE QVariantList getResolutions(int displayIndex) const;
 
@@ -35,12 +38,14 @@ public:
     Q_INVOKABLE bool setPrimaryDisplay(int displayIndex);
 
     Q_INVOKABLE bool applyChanges();
+    Q_INVOKABLE bool applySettings();
     Q_INVOKABLE void revertChanges();
 
 signals:
     void displaysChanged();
     void hasChangesChanged(bool hasChanges);
     void selectedIndexChanged(int index);
+    void selectedDisplayChanged();
     void applySuccess();
     void applyFailed(const QString& errorMessage);
 

@@ -144,9 +144,11 @@ ApplicationWindow {
         }
 
         onScreenSettingsClicked: {
-            if (screenDropEngine) {
-                screenDropEngine.notify("Display Setup", "Display arrangement drawer will open here.", false);
-            }
+            screenConfigSheet.open();
+        }
+
+        onScreenSettingsRequested: {
+            screenConfigSheet.open();
         }
 
         onOpenLogsClicked: {
@@ -210,6 +212,18 @@ ApplicationWindow {
                 "'" + name + "' was successfully added to your catalog.",
                 false
             );
+        }
+    }
+
+    // Display Topology & Settings Arranger Sheet
+    ScreenConfigSheet {
+        id: screenConfigSheet
+        anchors.fill: parent
+        displayBridge: typeof displayConfigBridge !== "undefined" ? displayConfigBridge : null
+        z: 950
+
+        onNotificationRequested: (title, message, isError) => {
+            notificationToast.show(title, message, isError);
         }
     }
 

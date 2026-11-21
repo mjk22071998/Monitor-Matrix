@@ -26,5 +26,6 @@
         <file>qml/views/AppSidebar.qml</file>
         <file>qml/views/CanvasView.qml</file>
         <file>qml/dialogs/AppEditModal.qml</file>
+        <file>qml/dialogs/ScreenConfigSheet.qml</file>
     </qresource>
 </RCC>

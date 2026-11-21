@@ -18,6 +18,7 @@ Rectangle {
     signal saveLayoutClicked()
     signal saveAsLayoutClicked()
     signal screenSettingsClicked()
+    signal screenSettingsRequested()
     signal openLogsClicked()
     signal themeToggleClicked()
 
@@ -250,7 +251,10 @@ Rectangle {
         HeaderButton {
             text: "Displays"
             tooltipText: "Inspect and configure connected display topology"
-            onClicked: root.screenSettingsClicked()
+            onClicked: {
+                root.screenSettingsClicked();
+                root.screenSettingsRequested();
+            }
         }
 
         // Logs Diagnostics Button
