@@ -95,20 +95,23 @@ int main(int argc, char** argv) {
         context->setContextProperty(QStringLiteral("placementModel"), &placementModel);
     }
 
-    const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
     QObject::connect(
         &engine,
-        &QQmlApplicationEngine::objectCreated,
+        &QQmlApplicationEngine::objectCreationFailed,
         &app,
-        [url](QObject* obj, const QUrl& objUrl) {
-            if (!obj && url == objUrl) {
-                QCoreApplication::exit(-1);
-            }
-        },
+        []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection
     );
 
-    engine.load(url);
+    engine.loadFromModule("ScreenDrop", "Main");
+    if (engine.rootObjects().isEmpty()) {
+        const QUrl fallbackUrl(QStringLiteral("qrc:/qt/qml/ScreenDrop/qml/Main.qml"));
+        engine.load(fallbackUrl);
+    }
+    if (engine.rootObjects().isEmpty()) {
+        const QUrl legacyUrl(QStringLiteral("qrc:/qml/Main.qml"));
+        engine.load(legacyUrl);
+    }
 
     return app.exec();
 }

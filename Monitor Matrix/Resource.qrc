@@ -11,7 +11,7 @@
         <file alias="DMSans-Italic.ttf">Resources/fonts/DMSans-Italic.ttf</file>
     </qresource>
     <qresource prefix="/">
-        <file>qml/main.qml</file>
+        <file>qml/Main.qml</file>
         <file>qml/theme/Theme.qml</file>
         <file>qml/theme/qmldir</file>
         <file>qml/components/HeaderBar.qml</file>

@@ -20,4 +20,6 @@ x64/**
 graphify-out/
 .superpowers/
 Monitor Matrix/Screen Drop.sln
+build/
+CMakeUserPresets.json
 

@@ -81,7 +81,7 @@
   <ItemGroup>
     <None Include="..\x64\Debug\config\apps.json" />
     <None Include="..\x64\Release\config\apps.json" />
-    <None Include="qml\main.qml" />
+    <None Include="qml\Main.qml" />
     <None Include="qml\theme\Theme.qml" />
     <None Include="qml\theme\qmldir" />
     <None Include="qml\components\HeaderBar.qml" />

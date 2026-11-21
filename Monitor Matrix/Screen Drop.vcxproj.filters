@@ -261,7 +261,7 @@
     <None Include="..\x64\Release\config\apps.json">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="qml\main.qml">
+    <None Include="qml\Main.qml">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="qml\theme\Theme.qml">
