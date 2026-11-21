@@ -114,8 +114,8 @@ Item {
                 id: headerRow
                 anchors.top: parent.top
                 anchors.left: parent.left
-                anchors.right: closeButton.left
-                anchors.rightMargin: Math.max(4, Math.round(6 / root.invZoom))
+                anchors.right: parent.right
+                anchors.rightMargin: root.closeBtnSize + Math.max(4, Math.round(6 / root.invZoom))
                 height: root.closeBtnSize
                 spacing: Math.max(4, Math.round(6 / root.invZoom))
 
@@ -458,6 +458,9 @@ Item {
             newY = proposedY;
             newH = proposedH;
         }
+
+        newW = Math.max(root.minWidth, newW);
+        newH = Math.max(root.minHeight, newH);
 
         root.x = newX;
         root.y = newY;

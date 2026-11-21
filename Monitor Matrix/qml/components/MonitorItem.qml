@@ -200,15 +200,25 @@ Item {
 
         delegate: PlacedAppItem {
             id: placedApp
-            required property string targetDeviceName
+            required property var model
 
-            visible: targetDeviceName === root.deviceName
+            placementId: model.placementId
+            appId: model.appId
+            appName: model.appName
+            appType: model.appType
+            rectX: model.rectX
+            rectY: model.rectY
+            rectW: model.rectW
+            rectH: model.rectH
+            hasOverlap: model.hasOverlap
+
+            visible: model.targetDeviceName === root.deviceName
             enabled: visible
 
             monitorWidth: root.rectWidth
             monitorHeight: root.rectHeight
             zoomScale: root.zoomScale
-            isSelected: root.selectedPlacementId === placedApp.placementId
+            isSelected: root.selectedPlacementId.length > 0 && root.selectedPlacementId === placedApp.placementId
 
             onSelectRequested: root.selectedPlacementId = placedApp.placementId
 
@@ -299,11 +309,12 @@ Item {
                 type = src["appType"] ? src["appType"].toString() : "Application";
             }
 
-            if (id && id.length > 0 && root.placementModel) {
+            var targetDev = (root.deviceName && root.deviceName.length > 0) ? root.deviceName : "";
+            if (id && id.length > 0 && targetDev.length > 0 && root.placementModel) {
                 root.placementModel.placeApp(
                     id,
                     name.length > 0 ? name : id,
-                    root.deviceName,
+                    targetDev,
                     activePositionEnum,
                     activeZoneRect,
                     type.length > 0 ? type : "Application"

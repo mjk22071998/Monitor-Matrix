@@ -116,9 +116,26 @@ Rectangle {
 
                     delegate: MonitorItem {
                         required property int index
+                        required property var model
 
-                        x: rectX - root.minDeskX
-                        y: rectY - root.minDeskY
+                        x: model.rectX - root.minDeskX
+                        y: model.rectY - root.minDeskY
+                        width: model.rectWidth
+                        height: model.rectHeight
+
+                        deviceName: model.deviceName
+                        modelName: model.modelName
+                        rectX: model.rectX
+                        rectY: model.rectY
+                        rectWidth: model.rectWidth
+                        rectHeight: model.rectHeight
+                        availX: model.availX
+                        availY: model.availY
+                        availWidth: model.availWidth
+                        availHeight: model.availHeight
+                        isPrimary: model.isPrimary
+                        scaleFactor: model.scaleFactor
+
                         displayIndex: index + 1
                         zoomScale: root.zoomScale
                         placementModel: root.placementModel
