@@ -131,12 +131,14 @@
   </ImportGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <QtInstall>6.11.1_msvc2022_64</QtInstall>
-    <QtModules>core;gui;widgets;qml;quick;quickcontrols2;testlib</QtModules>
+    <QtModules Condition="'$(Test)'==''">core;gui;widgets;qml;quick;quickcontrols2</QtModules>
+    <QtModules Condition="'$(Test)'!=''">core;gui;widgets;qml;quick;quickcontrols2;testlib</QtModules>
     <QMakeExtraArgs>QMAKE_MSC_VER=1951</QMakeExtraArgs>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <QtInstall>6.11.1_msvc2022_64</QtInstall>
-    <QtModules>core;gui;widgets;qml;quick;quickcontrols2;testlib</QtModules>
+    <QtModules Condition="'$(Test)'==''">core;gui;widgets;qml;quick;quickcontrols2</QtModules>
+    <QtModules Condition="'$(Test)'!=''">core;gui;widgets;qml;quick;quickcontrols2;testlib</QtModules>
     <QMakeExtraArgs>QMAKE_MSC_VER=1951</QMakeExtraArgs>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
