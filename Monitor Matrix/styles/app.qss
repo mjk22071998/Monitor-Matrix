@@ -1,2 +1,0 @@
-/* Styles are generated from src/theme/AppTheme.cpp so dark and light themes
-   share one source of truth with the custom QGraphicsScene painting code. */

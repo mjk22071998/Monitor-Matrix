@@ -19,29 +19,9 @@
     <ClCompile Include="src\platform\windows\WindowsTaskRunner.cpp" />
     <ClCompile Include="src\theme\AppTheme.cpp" />
     <ClCompile Include="src\utils\AppLogger.cpp" />
-    <ClCompile Include="src\scene\MonitorTopologyItem.cpp" />
-    <ClCompile Include="src\scene\MonitorTopologyScene.cpp">
-      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">input</DynamicSource>
-      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Filename).moc</QtMocFileName>
-      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Release|x64'">input</DynamicSource>
-      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Filename).moc</QtMocFileName>
-    </ClCompile>
     <ClCompile Include="main.cpp" Condition="'$(Test)'==''" />
-    <ClCompile Include="src\dialog\AppEditDialog.cpp" />
-    <ClCompile Include="src\dialog\ScreenConfigDialog.cpp" />
     <ClCompile Include="src\managers\ConfigManager.cpp" />
     <ClCompile Include="src\managers\LayoutManager.cpp" />
-    <ClCompile Include="src\scene\MonitorDropItem.cpp" />
-    <ClCompile Include="src\scene\MonitorScene.cpp" />
-    <ClCompile Include="src\scene\PlacedItem.cpp">
-      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">input</DynamicSource>
-      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Filename).moc</QtMocFileName>
-      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Release|x64'">input</DynamicSource>
-      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Filename).moc</QtMocFileName>
-    </ClCompile>
-    <ClCompile Include="src\scene\PlacedItemHandles.cpp" />
-    <ClCompile Include="src\scene\PlacedItemResize.cpp" />
-    <ClCompile Include="src\scene\PlacedItemSnap.cpp" />
     <ClCompile Include="src\services\LaunchService.cpp" />
     <ClCompile Include="src\services\LaunchProcess.cpp" />
     <ClCompile Include="src\services\LaunchWindowPlacement.cpp" />
@@ -50,9 +30,6 @@
     <ClCompile Include="src\strategies\ExecutableStrategy.cpp" />
     <ClCompile Include="src\strategies\LaunchStrategy.cpp" />
     <ClCompile Include="src\strategies\URLStrategy.cpp" />
-    <ClCompile Include="src\views\AppListView.cpp" />
-    <ClCompile Include="src\views\MainWindow.cpp" />
-    <ClCompile Include="src\views\MainWindowAppManagement.cpp" />
     <ClCompile Include="src\models\qml\AppCatalogModel.cpp" />
     <ClCompile Include="src\models\qml\MonitorCanvasModel.cpp" />
     <ClCompile Include="src\models\qml\PlacementModel.cpp" />
@@ -77,12 +54,8 @@
       <DynamicSource>input</DynamicSource>
       <QtMocFileName>%(Filename).moc</QtMocFileName>
     </QtMoc>
-    <QtMoc Include="src\dialog\AppEditDialog.h" />
-    <QtMoc Include="src\dialog\ScreenConfigDialog.h" />
     <QtMoc Include="src\services\DisplayConfigService.h" />
     <ClInclude Include="src\services\AppCatalogService.h" />
-    <ClInclude Include="src\scene\MonitorTopologyItem.h" />
-    <QtMoc Include="src\scene\MonitorTopologyScene.h" />
     <ClInclude Include="src\models\DisplayConfig.h" />
     <ClInclude Include="src\platform\windows\WindowsDisplayModes.h" />
     <ClInclude Include="src\platform\windows\WindowsDisplayTopology.h" />
@@ -94,11 +67,6 @@
     <ClInclude Include="src\models\AppItem.h" />
     <ClInclude Include="src\models\MonitorInfo.h" />
     <ClInclude Include="src\models\Placement.h" />
-    <QtMoc Include="src\scene\MonitorDropItem.h" />
-    <QtMoc Include="src\scene\PlacedItem.h" />
-    <ClInclude Include="src\scene\PlacedItemHandles.h" />
-    <ClInclude Include="src\scene\PlacedItemResize.h" />
-    <ClInclude Include="src\scene\PlacedItemSnap.h" />
     <ClInclude Include="src\services\LaunchService.h" />
     <ClInclude Include="src\services\LaunchProcess.h" />
     <ClInclude Include="src\services\LaunchWindowPlacement.h" />
@@ -108,15 +76,11 @@
     <ClInclude Include="src\strategies\ExecutableStrategy.h" />
     <ClInclude Include="src\strategies\LaunchStrategy.h" />
     <ClInclude Include="src\strategies\URLStrategy.h" />
-    <QtMoc Include="src\views\MainWindow.h" />
-    <QtMoc Include="src\views\AppListView.h" />
-    <QtMoc Include="src\scene\MonitorScene.h" />
     <QtMoc Include="src\services\MonitorService.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\x64\Debug\config\apps.json" />
     <None Include="..\x64\Release\config\apps.json" />
-    <None Include="styles\app.qss" />
     <None Include="qml\main.qml" />
     <None Include="qml\theme\Theme.qml" />
     <None Include="qml\theme\qmldir" />

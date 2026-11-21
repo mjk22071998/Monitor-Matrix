@@ -1,7 +1,4 @@
 <RCC>
-    <qresource prefix="/styles">
-        <file>styles/app.qss</file>
-    </qresource>
     <qresource prefix="/icons">
         <file alias="action-run.svg">Resources/icons/action-run.svg</file>
         <file alias="action-add.svg">Resources/icons/action-add.svg</file>

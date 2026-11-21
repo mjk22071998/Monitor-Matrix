@@ -40,23 +40,11 @@
     <Filter Include="Source Files\controllers">
       <UniqueIdentifier>{a8f12345-6789-4abc-def0-123456789abc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\views">
-      <UniqueIdentifier>{88818707-5f56-430a-8f61-f9a58c9ef6fc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\scene">
-      <UniqueIdentifier>{e7882784-abac-46b3-bc8f-029bb1e03ce8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\manager">
       <UniqueIdentifier>{6fdd8adb-ec9f-4a81-8717-00b36a964290}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\manager">
       <UniqueIdentifier>{7cb2e0f8-5df3-40fb-8219-d91f8f610186}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\scene">
-      <UniqueIdentifier>{6fed1be7-614f-40f8-bcd5-19fa0e834ea2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\views">
-      <UniqueIdentifier>{b1b1cf05-d2bb-4a2d-8481-4bbc28ae56f4}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\strategy">
       <UniqueIdentifier>{871b009d-6e01-44f7-94ed-d0a705730e42}</UniqueIdentifier>
@@ -66,12 +54,6 @@
     </Filter>
     <Filter Include="Header Files\services">
       <UniqueIdentifier>{09bc0141-2e0a-4577-b725-d932723b82ac}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\dialog">
-      <UniqueIdentifier>{9bf142d6-f379-41a6-841d-f00ab1e14f85}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\dialog">
-      <UniqueIdentifier>{2c04e934-da56-4f7c-9618-b6bc4d38d2ea}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\theme">
       <UniqueIdentifier>{a870af0a-3e07-444d-b01e-79d6fbda9f89}</UniqueIdentifier>
@@ -117,21 +99,6 @@
     <ClCompile Include="src\managers\ConfigManager.cpp">
       <Filter>Source Files\manager</Filter>
     </ClCompile>
-    <ClCompile Include="src\scene\MonitorScene.cpp">
-      <Filter>Source Files\scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\scene\MonitorDropItem.cpp">
-      <Filter>Source Files\scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\views\AppListView.cpp">
-      <Filter>Source Files\views</Filter>
-    </ClCompile>
-    <ClCompile Include="src\views\MainWindow.cpp">
-      <Filter>Source Files\views</Filter>
-    </ClCompile>
-    <ClCompile Include="src\views\MainWindowAppManagement.cpp">
-      <Filter>Source Files\views</Filter>
-    </ClCompile>
     <ClCompile Include="src\strategies\ExecutableStrategy.cpp">
       <Filter>Source Files\strategy</Filter>
     </ClCompile>
@@ -162,32 +129,8 @@
     <ClCompile Include="src\managers\LayoutManager.cpp">
       <Filter>Source Files\manager</Filter>
     </ClCompile>
-    <ClCompile Include="src\scene\PlacedItem.cpp">
-      <Filter>Source Files\scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\scene\PlacedItemHandles.cpp">
-      <Filter>Source Files\scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\scene\PlacedItemResize.cpp">
-      <Filter>Source Files\scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\scene\PlacedItemSnap.cpp">
-      <Filter>Source Files\scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dialog\ScreenConfigDialog.cpp">
-      <Filter>Source Files\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dialog\AppEditDialog.cpp">
-      <Filter>Source Files\dialog</Filter>
-    </ClCompile>
-    <ClCompile Include="src\scene\MonitorTopologyItem.cpp">
-      <Filter>Source Files\scene</Filter>
-    </ClCompile>
     <ClCompile Include="src\services\DisplayConfigService.cpp">
       <Filter>Source Files\services</Filter>
-    </ClCompile>
-    <ClCompile Include="src\scene\MonitorTopologyScene.cpp">
-      <Filter>Source Files\scene</Filter>
     </ClCompile>
     <ClCompile Include="src\theme\AppTheme.cpp">
       <Filter>Source Files\theme</Filter>
@@ -266,20 +209,8 @@
     <ClInclude Include="src\managers\LayoutManager.h">
       <Filter>Header Files\manager</Filter>
     </ClInclude>
-    <ClInclude Include="src\scene\PlacedItemHandles.h">
-      <Filter>Header Files\scene</Filter>
-    </ClInclude>
-    <ClInclude Include="src\scene\PlacedItemResize.h">
-      <Filter>Header Files\scene</Filter>
-    </ClInclude>
-    <ClInclude Include="src\scene\PlacedItemSnap.h">
-      <Filter>Header Files\scene</Filter>
-    </ClInclude>
     <ClInclude Include="src\models\DisplayConfig.h">
       <Filter>Header Files\models</Filter>
-    </ClInclude>
-    <ClInclude Include="src\scene\MonitorTopologyItem.h">
-      <Filter>Header Files\scene</Filter>
     </ClInclude>
     <ClInclude Include="src\theme\AppTheme.h">
       <Filter>Header Files\theme</Filter>
@@ -303,30 +234,6 @@
   <ItemGroup>
     <QtMoc Include="src\services\MonitorService.h">
       <Filter>Header Files\services</Filter>
-    </QtMoc>
-    <QtMoc Include="src\views\AppListView.h">
-      <Filter>Header Files\views</Filter>
-    </QtMoc>
-    <QtMoc Include="src\views\MainWindow.h">
-      <Filter>Header Files\views</Filter>
-    </QtMoc>
-    <QtMoc Include="src\scene\MonitorScene.h">
-      <Filter>Header Files\scene</Filter>
-    </QtMoc>
-    <QtMoc Include="src\scene\MonitorDropItem.h">
-      <Filter>Header Files\scene</Filter>
-    </QtMoc>
-    <QtMoc Include="src\scene\PlacedItem.h">
-      <Filter>Header Files\scene</Filter>
-    </QtMoc>
-    <QtMoc Include="src\dialog\ScreenConfigDialog.h">
-      <Filter>Header Files\dialog</Filter>
-    </QtMoc>
-    <QtMoc Include="src\dialog\AppEditDialog.h">
-      <Filter>Header Files\dialog</Filter>
-    </QtMoc>
-    <QtMoc Include="src\scene\MonitorTopologyScene.h">
-      <Filter>Header Files\scene</Filter>
     </QtMoc>
     <QtMoc Include="src\services\DisplayConfigService.h">
       <Filter>Header Files\services</Filter>
@@ -352,9 +259,6 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\x64\Release\config\apps.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="styles\app.qss">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="qml\main.qml">

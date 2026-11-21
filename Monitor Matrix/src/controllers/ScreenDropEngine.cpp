@@ -114,7 +114,27 @@ void ScreenDropEngine::setCatalogModel(AppCatalogModel* model)
 
 void ScreenDropEngine::setCanvasModel(MonitorCanvasModel* model)
 {
+    if (m_canvasModel == model) {
+        return;
+    }
+
+    if (m_canvasModel) {
+        m_canvasModel->disconnect(this);
+    }
+
     m_canvasModel = model;
+
+    if (m_canvasModel) {
+        connect(m_canvasModel, &MonitorCanvasModel::monitorsChanged, this, [this]() {
+            if (m_placementModel) {
+                m_placementModel->setMonitors(m_canvasModel->monitors());
+            }
+        });
+
+        if (m_placementModel) {
+            m_placementModel->setMonitors(m_canvasModel->monitors());
+        }
+    }
 }
 
 void ScreenDropEngine::setPlacementModel(PlacementModel* model)
@@ -130,6 +150,10 @@ void ScreenDropEngine::setPlacementModel(PlacementModel* model)
     m_placementModel = model;
 
     if (m_placementModel) {
+        if (m_canvasModel) {
+            m_placementModel->setMonitors(m_canvasModel->monitors());
+        }
+
         connect(m_placementModel, &PlacementModel::placementsChanged, this, [this]() {
             if (!m_isLoading) {
                 markDirty();
@@ -183,7 +207,18 @@ void ScreenDropEngine::runLayout()
     setIsRunning(true);
 
     const QList<AppItem> apps = m_catalogModel ? m_catalogModel->apps() : m_catalogService.loadApplications();
-    const QList<Placement> placements = m_placementModel->toPlacements();
+    QList<Placement> placements = m_placementModel->toPlacements();
+    if (m_canvasModel) {
+        const QList<MonitorInfo> mons = m_canvasModel->monitors();
+        for (Placement& p : placements) {
+            for (const MonitorInfo& mi : mons) {
+                if (mi.deviceName == p.monitor.deviceName) {
+                    p.monitor = mi;
+                    break;
+                }
+            }
+        }
+    }
 
     m_launchService.launchPlacements(apps, placements);
 
@@ -213,12 +248,21 @@ bool ScreenDropEngine::saveLayout(const QString& filePath)
         targetPath += QStringLiteral(".sav");
     }
 
-    const QList<Placement> placements = m_placementModel ? m_placementModel->toPlacements() : QList<Placement>();
+    QList<Placement> placements = m_placementModel ? m_placementModel->toPlacements() : QList<Placement>();
     QList<MonitorInfo> monitors;
-    if (m_canvasModel) {
+    if (m_canvasModel && !m_canvasModel->monitors().isEmpty()) {
         monitors = m_canvasModel->monitors();
     } else {
         monitors = WindowsDisplayTopology::getMonitors();
+    }
+
+    for (Placement& p : placements) {
+        for (const MonitorInfo& mi : monitors) {
+            if (mi.deviceName == p.monitor.deviceName) {
+                p.monitor = mi;
+                break;
+            }
+        }
     }
 
     const bool ok = LayoutManager::saveToFile(targetPath, placements, monitors);
@@ -294,6 +338,11 @@ bool ScreenDropEngine::loadLayout(const QString& filePath)
 
     m_isLoading = true;
     if (m_placementModel) {
+        if (m_canvasModel && !m_canvasModel->monitors().isEmpty()) {
+            m_placementModel->setMonitors(m_canvasModel->monitors());
+        } else if (!loadedMonitors.isEmpty()) {
+            m_placementModel->setMonitors(loadedMonitors);
+        }
         const QList<AppItem> catalog = m_catalogModel ? m_catalogModel->apps() : m_catalogService.loadApplications();
         m_placementModel->loadPlacements(loadedPlacements, catalog);
 

@@ -220,6 +220,7 @@ void PlacementModel::setMonitorBounds(const QString& deviceName, const QRectF& b
 
 void PlacementModel::setMonitors(const QList<MonitorInfo>& monitors)
 {
+    m_monitors = monitors;
     m_monitorBounds.clear();
     for (const MonitorInfo& monitor : monitors) {
         m_monitorBounds[monitor.deviceName] = QRectF(
@@ -237,6 +238,17 @@ QList<Placement> PlacementModel::toPlacements() const
     for (const PlacementItem& item : m_placements) {
         MonitorInfo mon;
         mon.deviceName = item.targetDeviceName;
+        for (const MonitorInfo& m : m_monitors) {
+            if (m.deviceName == item.targetDeviceName) {
+                mon = m;
+                break;
+            }
+        }
+        if (mon.geometry.isNull() && m_monitorBounds.contains(item.targetDeviceName)) {
+            mon.geometry = m_monitorBounds[item.targetDeviceName].toRect();
+            mon.availableGeometry = mon.geometry;
+        }
+
         QRect zone = item.rect.toRect();
 
         Placement p(item.appId, mon, zone);

@@ -93,6 +93,7 @@ private:
 
     QList<PlacementItem> m_placements;
     QHash<QString, QRectF> m_monitorBounds;
+    QList<MonitorInfo> m_monitors;
     bool m_hasOverlaps = false;
     int m_invalidCount = 0;
 };
