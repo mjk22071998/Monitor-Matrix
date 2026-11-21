@@ -524,8 +524,9 @@ Item {
                                         property int origDesktopY: 0
 
                                         onPressed: (mouse) => {
-                                            startMouseX = mouse.x;
-                                            startMouseY = mouse.y;
+                                            var p = monitorMouse.mapToItem(topoCanvasArea, mouse.x, mouse.y);
+                                            startMouseX = p.x;
+                                            startMouseY = p.y;
                                             origDesktopX = disp.x;
                                             origDesktopY = disp.y;
                                             if (root.displayBridge) {
@@ -536,15 +537,17 @@ Item {
 
                                         onPositionChanged: (mouse) => {
                                             if (pressed && topoCanvasArea.isDragging) {
-                                                var dx = mouse.x - startMouseX;
-                                                var dy = mouse.y - startMouseY;
+                                                var p = monitorMouse.mapToItem(topoCanvasArea, mouse.x, mouse.y);
+                                                var dx = p.x - startMouseX;
+                                                var dy = p.y - startMouseY;
                                                 var desktopDx = Math.round(dx / topoCanvasArea.zoomScale);
                                                 var desktopDy = Math.round(dy / topoCanvasArea.zoomScale);
                                                 var targetX = origDesktopX + desktopDx;
                                                 var targetY = origDesktopY + desktopDy;
 
                                                 // Magnetic snapping to (0, 0) and neighbor boundaries
-                                                var snapThreshold = 32;
+                                                var snapScreenPixels = 16;
+                                                var snapThreshold = Math.round(snapScreenPixels / topoCanvasArea.zoomScale);
                                                 if (Math.abs(targetX) < snapThreshold) targetX = 0;
                                                 if (Math.abs(targetY) < snapThreshold) targetY = 0;
 
@@ -749,6 +752,9 @@ Item {
                                         target: root
                                         function onSelectedDisplayChanged() {
                                             resolutionCombo.syncResolutionIndex();
+                                            if (root.selectedDisplay) {
+                                                primaryCheckBox.checked = (root.selectedDisplay.isPrimary === true);
+                                            }
                                         }
                                         function onAvailableResolutionsChanged() {
                                             resolutionCombo.syncResolutionIndex();
