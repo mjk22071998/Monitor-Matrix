@@ -212,7 +212,7 @@ void ScreenDropEngine::runLayout()
         const QList<MonitorInfo> mons = m_canvasModel->monitors();
         for (Placement& p : placements) {
             for (const MonitorInfo& mi : mons) {
-                if (mi.deviceName == p.monitor.deviceName) {
+                if (mi.deviceName.compare(p.monitor.deviceName, Qt::CaseInsensitive) == 0) {
                     p.monitor = mi;
                     break;
                 }
@@ -258,7 +258,7 @@ bool ScreenDropEngine::saveLayout(const QString& filePath)
 
     for (Placement& p : placements) {
         for (const MonitorInfo& mi : monitors) {
-            if (mi.deviceName == p.monitor.deviceName) {
+            if (mi.deviceName.compare(p.monitor.deviceName, Qt::CaseInsensitive) == 0) {
                 p.monitor = mi;
                 break;
             }

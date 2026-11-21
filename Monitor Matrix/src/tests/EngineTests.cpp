@@ -7,6 +7,8 @@
 #include "../models/qml/AppCatalogModel.h"
 #include "../models/qml/MonitorCanvasModel.h"
 #include "../models/qml/PlacementModel.h"
+#include "../services/LaunchWindowPlacement.h"
+#include "../platform/windows/WindowsDisplayTopology.h"
 
 class EngineTests : public QObject {
     Q_OBJECT
@@ -307,6 +309,137 @@ private slots:
             bridge.revertChanges();
             QVERIFY(!bridge.hasChanges());
         }
+    }
+
+    void test4KAboveDual1080pPlacementMapping() {
+        // Topology: 4K screen (3840x2160) positioned directly above two 1080p screens.
+        // Screen 2 (1080p bottom-left) is Primary at (0, 0, 1920, 1080).
+        // Screen 3 (1080p bottom-right) is at (1920, 0, 1920, 1080).
+        // Screen 1 (4K top) is at (0, -2160, 3840, 2160).
+        WindowsNativeMonitor native4K;
+        native4K.deviceName = QStringLiteral("\\\\.\\DISPLAY1");
+        native4K.monitorRect = QRect(0, -2160, 3840, 2160);
+        native4K.workRect = QRect(0, -2160, 3840, 2160);
+        native4K.primary = false;
+
+        // 1. Top-Left Corner
+        QRect tlZone(0, 0, 1920, 1080);
+        QRect tlMapped = LaunchWindowPlacement::mapZoneToNativeWorkArea(native4K, tlZone);
+        QCOMPARE(tlMapped, QRect(0, -2160, 1920, 1080));
+        QVERIFY(tlMapped.bottom() <= 0); // Must NOT bleed into lower screens (y >= 0)
+
+        // 2. Top-Right Corner
+        QRect trZone(1920, 0, 1920, 1080);
+        QRect trMapped = LaunchWindowPlacement::mapZoneToNativeWorkArea(native4K, trZone);
+        QCOMPARE(trMapped, QRect(1920, -2160, 1920, 1080));
+        QVERIFY(trMapped.bottom() <= 0);
+
+        // 3. Bottom-Left Corner
+        QRect blZone(0, 1080, 1920, 1080);
+        QRect blMapped = LaunchWindowPlacement::mapZoneToNativeWorkArea(native4K, blZone);
+        QCOMPARE(blMapped, QRect(0, -1080, 1920, 1080));
+        QVERIFY(blMapped.bottom() <= 0); // Must end at y=0, exactly touching edge without bleeding into lower screens!
+
+        // 4. Bottom-Right Corner
+        QRect brZone(1920, 1080, 1920, 1080);
+        QRect brMapped = LaunchWindowPlacement::mapZoneToNativeWorkArea(native4K, brZone);
+        QCOMPARE(brMapped, QRect(1920, -1080, 1920, 1080));
+        QVERIFY(brMapped.bottom() <= 0);
+        QVERIFY(brMapped.right() <= 3840);
+    }
+
+    void test4KPrimaryAboveDual1080pPlacementMapping() {
+        // Topology: 4K screen (3840x2160) is Primary at (0, 0, 3840, 2160) with 48px taskbar.
+        // Below it are two 1080p screens at (0, 2160, 1920, 1080) and (1920, 2160, 1920, 1080).
+        WindowsNativeMonitor native4K;
+        native4K.deviceName = QStringLiteral("\\\\.\\DISPLAY1");
+        native4K.monitorRect = QRect(0, 0, 3840, 2160);
+        native4K.workRect = QRect(0, 0, 3840, 2112); // Work rect excluding taskbar
+        native4K.primary = true;
+
+        // 1. Top-Left Corner
+        QRect tlZone(0, 0, 1920, 1080);
+        QRect tlMapped = LaunchWindowPlacement::mapZoneToNativeWorkArea(native4K, tlZone);
+        QCOMPARE(tlMapped.x(), 0);
+        QCOMPARE(tlMapped.y(), 0);
+        QCOMPARE(tlMapped.width(), 1920);
+        QCOMPARE(tlMapped.height(), 1056);
+        QVERIFY(tlMapped.bottom() <= 2112); // Strictly within workRect
+
+        // 2. Top-Right Corner
+        QRect trZone(1920, 0, 1920, 1080);
+        QRect trMapped = LaunchWindowPlacement::mapZoneToNativeWorkArea(native4K, trZone);
+        QCOMPARE(trMapped.x(), 1920);
+        QCOMPARE(trMapped.y(), 0);
+        QCOMPARE(trMapped.width(), 1920);
+        QCOMPARE(trMapped.height(), 1056);
+        QVERIFY(trMapped.bottom() <= 2112);
+
+        // 3. Bottom-Left Corner
+        QRect blZone(0, 1080, 1920, 1080);
+        QRect blMapped = LaunchWindowPlacement::mapZoneToNativeWorkArea(native4K, blZone);
+        QCOMPARE(blMapped.x(), 0);
+        QCOMPARE(blMapped.y(), 1056);
+        QCOMPARE(blMapped.width(), 1920);
+        QCOMPARE(blMapped.height(), 1056);
+        QVERIFY(blMapped.bottom() <= 2112); // Never spans past taskbar or into lower screens!
+
+        // 4. Bottom-Right Corner
+        QRect brZone(1920, 1080, 1920, 1080);
+        QRect brMapped = LaunchWindowPlacement::mapZoneToNativeWorkArea(native4K, brZone);
+        QCOMPARE(brMapped.x(), 1920);
+        QCOMPARE(brMapped.y(), 1056);
+        QCOMPARE(brMapped.width(), 1920);
+        QCOMPARE(brMapped.height(), 1056);
+        QVERIFY(brMapped.bottom() <= 2112);
+    }
+
+    void test4KCenteredAboveDual1080pPlacementMapping() {
+        // Topology: 4K screen centered above at (-960, -2160, 3840, 2160)
+        WindowsNativeMonitor native4K;
+        native4K.deviceName = QStringLiteral("\\\\.\\DISPLAY1");
+        native4K.monitorRect = QRect(-960, -2160, 3840, 2160);
+        native4K.workRect = QRect(-960, -2160, 3840, 2160);
+        native4K.primary = false;
+
+        // Bottom-Right Corner (local: 1920, 1080, 1920, 1080)
+        QRect brZone(1920, 1080, 1920, 1080);
+        QRect brMapped = LaunchWindowPlacement::mapZoneToNativeWorkArea(native4K, brZone);
+        QCOMPARE(brMapped, QRect(960, -1080, 1920, 1080));
+        QVERIFY(brMapped.left() >= -960);
+        QVERIFY(brMapped.right() <= 2880);
+        QVERIFY(brMapped.bottom() <= 0); // No bleed into lower monitors
+    }
+
+    void testPlacementModelCaseInsensitiveMatchingAnd4KBounds() {
+        PlacementModel model;
+        QList<MonitorInfo> mons;
+
+        MonitorInfo m4k;
+        m4k.deviceName = QStringLiteral("\\\\.\\DISPLAY1");
+        m4k.geometry = QRect(0, -2160, 3840, 2160);
+        m4k.availableGeometry = m4k.geometry;
+        mons.append(m4k);
+
+        MonitorInfo m1080_1;
+        m1080_1.deviceName = QStringLiteral("\\\\.\\DISPLAY2");
+        m1080_1.geometry = QRect(0, 0, 1920, 1080);
+        m1080_1.availableGeometry = m1080_1.geometry;
+        mons.append(m1080_1);
+
+        model.setMonitors(mons);
+
+        // Place app with lowercase device name
+        QString id = model.placeApp("app4k", "App 4K", "\\\\.\\display1", 8, QRectF(1920, 1080, 1920, 1080));
+        QVERIFY(!id.isEmpty());
+
+        QRectF rect = model.placementRect(id);
+        QCOMPARE(rect, QRectF(1920, 1080, 1920, 1080));
+
+        // toPlacements should match case-insensitively and preserve monitor geometry
+        QList<Placement> placements = model.toPlacements();
+        QCOMPARE(placements.size(), 1);
+        QCOMPARE(placements.first().monitor.geometry, QRect(0, -2160, 3840, 2160));
     }
 };
 

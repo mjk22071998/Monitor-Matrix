@@ -214,9 +214,22 @@ target_link_libraries(ScreenDrop
 # 3. Automated Post-Build Deployment (windeployqt)
 # ==============================================================================
 if(WIN32)
-    find_program(WINDEPLOYQT_EXECUTABLE windeployqt
-        HINTS "${_qt6Core_install_prefix}/bin"
-    )
+    get_target_property(_qt_core_dll Qt6::Core LOCATION)
+    if(NOT _qt_core_dll)
+        get_target_property(_qt_core_dll Qt6::Core IMPORTED_LOCATION_RELEASE)
+    endif()
+    if(NOT _qt_core_dll)
+        get_target_property(_qt_core_dll Qt6::Core IMPORTED_LOCATION)
+    endif()
+    if(_qt_core_dll)
+        get_filename_component(_qt_bin_dir "${_qt_core_dll}" DIRECTORY)
+        set(WINDEPLOYQT_EXECUTABLE "${_qt_bin_dir}/windeployqt.exe" CACHE FILEPATH "Path to windeployqt executable" FORCE)
+    else()
+        find_program(WINDEPLOYQT_EXECUTABLE windeployqt
+            HINTS "${_qt6Core_install_prefix}/bin"
+        )
+    endif()
+
     if(WINDEPLOYQT_EXECUTABLE)
         add_custom_command(TARGET ScreenDrop POST_BUILD
             COMMAND "${WINDEPLOYQT_EXECUTABLE}"
@@ -224,6 +237,15 @@ if(WIN32)
                     --no-compiler-runtime
                     "$<TARGET_FILE:ScreenDrop>"
             COMMENT "Deploying Qt runtime dependencies using windeployqt..."
+        )
+    endif()
+
+    if(TARGET Qt6::Test)
+        add_custom_command(TARGET ScreenDrop POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    "$<TARGET_FILE:Qt6::Test>"
+                    "$<TARGET_FILE_DIR:ScreenDrop>"
+            COMMENT "Copying Qt6Test.dll to output directory..."
         )
     endif()
 endif()

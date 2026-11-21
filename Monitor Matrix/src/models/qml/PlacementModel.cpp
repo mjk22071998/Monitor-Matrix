@@ -239,14 +239,19 @@ QList<Placement> PlacementModel::toPlacements() const
         MonitorInfo mon;
         mon.deviceName = item.targetDeviceName;
         for (const MonitorInfo& m : m_monitors) {
-            if (m.deviceName == item.targetDeviceName) {
+            if (m.deviceName.compare(item.targetDeviceName, Qt::CaseInsensitive) == 0) {
                 mon = m;
                 break;
             }
         }
-        if (mon.geometry.isNull() && m_monitorBounds.contains(item.targetDeviceName)) {
-            mon.geometry = m_monitorBounds[item.targetDeviceName].toRect();
-            mon.availableGeometry = mon.geometry;
+        if (mon.geometry.isNull()) {
+            for (auto it = m_monitorBounds.constBegin(); it != m_monitorBounds.constEnd(); ++it) {
+                if (it.key().compare(item.targetDeviceName, Qt::CaseInsensitive) == 0) {
+                    mon.geometry = it.value().toRect();
+                    mon.availableGeometry = mon.geometry;
+                    break;
+                }
+            }
         }
 
         QRect zone = item.rect.toRect();
@@ -343,27 +348,32 @@ QRectF PlacementModel::clampToConstraints(const QString& deviceName, const QRect
     qreal x = rect.x();
     qreal y = rect.y();
 
-    if (m_monitorBounds.contains(deviceName)) {
-        const QRectF bounds = m_monitorBounds.value(deviceName);
-        if (bounds.width() > 0 && bounds.height() > 0) {
-            if (width > bounds.width()) {
-                width = bounds.width();
-            }
-            if (height > bounds.height()) {
-                height = bounds.height();
-            }
-            if (x < 0) {
-                x = 0;
-            }
-            if (y < 0) {
-                y = 0;
-            }
-            if (x + width > bounds.width()) {
-                x = bounds.width() - width;
-            }
-            if (y + height > bounds.height()) {
-                y = bounds.height() - height;
-            }
+    QRectF bounds;
+    for (auto it = m_monitorBounds.constBegin(); it != m_monitorBounds.constEnd(); ++it) {
+        if (it.key().compare(deviceName, Qt::CaseInsensitive) == 0) {
+            bounds = it.value();
+            break;
+        }
+    }
+
+    if (bounds.width() > 0 && bounds.height() > 0) {
+        if (width > bounds.width()) {
+            width = bounds.width();
+        }
+        if (height > bounds.height()) {
+            height = bounds.height();
+        }
+        if (x < 0) {
+            x = 0;
+        }
+        if (y < 0) {
+            y = 0;
+        }
+        if (x + width > bounds.width()) {
+            x = bounds.width() - width;
+        }
+        if (y + height > bounds.height()) {
+            y = bounds.height() - height;
         }
     }
 

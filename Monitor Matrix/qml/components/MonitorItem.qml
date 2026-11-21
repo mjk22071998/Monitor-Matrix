@@ -26,6 +26,7 @@ Item {
 
     width: rectWidth
     height: rectHeight
+    clip: true
 
     // Snapping Guide State
     property bool vGuideVisible: false
@@ -212,7 +213,9 @@ Item {
             rectH: model.rectH
             hasOverlap: model.hasOverlap
 
-            visible: model.targetDeviceName === root.deviceName
+            visible: (model.targetDeviceName && root.deviceName)
+                ? (model.targetDeviceName.toLowerCase() === root.deviceName.toLowerCase())
+                : false
             enabled: visible
 
             monitorWidth: root.rectWidth

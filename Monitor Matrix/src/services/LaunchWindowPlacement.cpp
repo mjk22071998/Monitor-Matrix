@@ -105,69 +105,49 @@ QRect clampRectToBounds(QRect rect, const QRect& bounds)
     return rect;
 }
 
-QRect mapZoneToNativeWorkArea(const WindowsNativeMonitor& native,
-    const QRect& zoneRect)
-{
-    QRectF monitorRect = QRectF(native.monitorRect);
-
-    if (!monitorRect.isValid() || monitorRect.isEmpty())
-        return zoneRect;
-
-    QRectF zone = QRectF(zoneRect);
-    const QRectF localMonitor(0, 0, monitorRect.width(), monitorRect.height());
-
-    if (!monitorRect.intersects(zone) && localMonitor.intersects(zone)) {
-        qInfo().noquote()
-            << "Custom zone looked monitor-local; translating to native monitor coordinates."
-            << "device=" << native.deviceName
-            << "zoneBefore=" << rectToString(zone)
-            << "monitor=" << rectToString(monitorRect);
-
-        zone.translate(monitorRect.topLeft());
-    }
-
-    const qreal xRatio = (zone.x() - monitorRect.x()) / monitorRect.width();
-    const qreal yRatio = (zone.y() - monitorRect.y()) / monitorRect.height();
-    const qreal widthRatio = zone.width() / monitorRect.width();
-    const qreal heightRatio = zone.height() / monitorRect.height();
-
-    QRect mapped(
-        native.workRect.x() + qRound(xRatio * native.workRect.width()),
-        native.workRect.y() + qRound(yRatio * native.workRect.height()),
-        qRound(widthRatio * native.workRect.width()),
-        qRound(heightRatio * native.workRect.height())
-    );
-
-    if (mapped.width() <= 0)
-        mapped.setWidth(qMax(1, qRound(native.workRect.width() * 0.25)));
-
-    if (mapped.height() <= 0)
-        mapped.setHeight(qMax(1, qRound(native.workRect.height() * 0.25)));
-
-    mapped = clampRectToBounds(mapped, native.workRect);
-
-    qInfo().noquote()
-        << "Mapped custom zone."
-        << "device=" << native.deviceName
-        << "monitor=" << rectToString(native.monitorRect)
-        << "work=" << rectToString(native.workRect)
-        << "zone=" << rectToString(zoneRect)
-        << "target=" << rectToString(mapped);
-
-    return mapped;
-}
-
 bool setWindowRect(HWND hwnd, const QRect& rect, UINT flags)
 {
-    return SetWindowPos(
+    // Match the target window's DPI awareness context to prevent cross-process auto-scaling
+    DPI_AWARENESS_CONTEXT oldContext = nullptr;
+    HMODULE user32 = GetModuleHandleW(L"user32.dll");
+    if (user32) {
+        using GetWindowDpiAwarenessContextFn = DPI_AWARENESS_CONTEXT(WINAPI*)(HWND);
+        using SetThreadDpiAwarenessContextFn = DPI_AWARENESS_CONTEXT(WINAPI*)(DPI_AWARENESS_CONTEXT);
+
+        auto getContext = reinterpret_cast<GetWindowDpiAwarenessContextFn>(
+            GetProcAddress(user32, "GetWindowDpiAwarenessContext"));
+        auto setContext = reinterpret_cast<SetThreadDpiAwarenessContextFn>(
+            GetProcAddress(user32, "SetThreadDpiAwarenessContext"));
+
+        if (getContext && setContext) {
+            DPI_AWARENESS_CONTEXT targetContext = getContext(hwnd);
+            if (targetContext) {
+                oldContext = setContext(targetContext);
+            }
+        }
+    }
+
+    const bool success = SetWindowPos(
         hwnd,
         nullptr,
         rect.x(),
         rect.y(),
         rect.width(),
         rect.height(),
-        flags
+        flags | SWP_FRAMECHANGED
     ) != FALSE;
+
+    // Restore calling thread's original DPI awareness context
+    if (oldContext && user32) {
+        using SetThreadDpiAwarenessContextFn = DPI_AWARENESS_CONTEXT(WINAPI*)(DPI_AWARENESS_CONTEXT);
+        auto setContext = reinterpret_cast<SetThreadDpiAwarenessContextFn>(
+            GetProcAddress(user32, "SetThreadDpiAwarenessContext"));
+        if (setContext) {
+            setContext(oldContext);
+        }
+    }
+
+    return success;
 }
 
 void repaintWindow(HWND hwnd)
@@ -183,6 +163,68 @@ void repaintWindow(HWND hwnd)
 }
 
 namespace LaunchWindowPlacement {
+
+QRect mapZoneToNativeWorkArea(const WindowsNativeMonitor& native,
+    const QRect& zoneRect)
+{
+    const QRect monitorRect = native.monitorRect;
+    if (!monitorRect.isValid() || monitorRect.isEmpty())
+        return zoneRect;
+
+    const QRect workRect = (native.workRect.isValid() && !native.workRect.isEmpty())
+        ? native.workRect
+        : monitorRect;
+
+    QRect zone = zoneRect;
+
+    // Detect if zone is already in global virtual desktop coordinates.
+    // A zone is considered global ONLY if it is completely inside monitorRect AND monitorRect is not at (0, 0).
+    const bool isAlreadyGlobal = (monitorRect.topLeft() != QPoint(0, 0)) &&
+        (zone.left() >= monitorRect.left() && zone.right() <= monitorRect.right() &&
+         zone.top() >= monitorRect.top() && zone.bottom() <= monitorRect.bottom());
+
+    qreal xOffset = 0.0;
+    qreal yOffset = 0.0;
+
+    if (isAlreadyGlobal) {
+        xOffset = zone.x() - monitorRect.x();
+        yOffset = zone.y() - monitorRect.y();
+    } else {
+        // zone is monitor-local (relative to (0, 0) of this monitor)
+        xOffset = zone.x();
+        yOffset = zone.y();
+    }
+
+    const qreal xRatio = xOffset / static_cast<qreal>(monitorRect.width());
+    const qreal yRatio = yOffset / static_cast<qreal>(monitorRect.height());
+    const qreal widthRatio = zone.width() / static_cast<qreal>(monitorRect.width());
+    const qreal heightRatio = zone.height() / static_cast<qreal>(monitorRect.height());
+
+    QRect mapped(
+        workRect.x() + qRound(xRatio * workRect.width()),
+        workRect.y() + qRound(yRatio * workRect.height()),
+        qRound(widthRatio * workRect.width()),
+        qRound(heightRatio * workRect.height())
+    );
+
+    if (mapped.width() <= 0)
+        mapped.setWidth(qMax(1, qRound(workRect.width() * 0.25)));
+
+    if (mapped.height() <= 0)
+        mapped.setHeight(qMax(1, qRound(workRect.height() * 0.25)));
+
+    mapped = clampRectToBounds(mapped, workRect);
+
+    qInfo().noquote()
+        << "Mapped custom zone."
+        << "device=" << native.deviceName
+        << "monitor=" << rectToString(native.monitorRect)
+        << "work=" << rectToString(native.workRect)
+        << "zone=" << rectToString(zoneRect)
+        << "target=" << rectToString(mapped);
+
+    return mapped;
+}
 
 bool placeWindow(HWND hwnd,
     const MonitorInfo& info,
@@ -219,12 +261,33 @@ bool placeWindow(HWND hwnd,
             ? mapZoneToNativeWorkArea(native, zoneRect)
             : zoneRect;
 
-        ShowWindow(hwnd, SW_RESTORE);
+        if (IsZoomed(hwnd) || IsIconic(hwnd)) {
+            ShowWindow(hwnd, SW_RESTORE);
+        }
+
         const bool moved = setWindowRect(
             hwnd,
             targetRect,
-            SWP_NOZORDER | SWP_NOACTIVATE
+            SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED
         );
+
+        // Verification pass: Moving windows across mixed-DPI monitors triggers WM_DPICHANGED in Windows.
+        // If the target app adjusts its dimensions upon WM_DPICHANGED, re-applying guarantees placement adherence.
+        RECT currentRect = {};
+        if (GetWindowRect(hwnd, &currentRect)) {
+            const int curW = currentRect.right - currentRect.left;
+            const int curH = currentRect.bottom - currentRect.top;
+            if (qAbs(currentRect.left - targetRect.x()) > 4 ||
+                qAbs(currentRect.top - targetRect.y()) > 4 ||
+                qAbs(curW - targetRect.width()) > 4 ||
+                qAbs(curH - targetRect.height()) > 4) {
+                setWindowRect(
+                    hwnd,
+                    targetRect,
+                    SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED
+                );
+            }
+        }
 
         repaintWindow(hwnd);
         return moved;
